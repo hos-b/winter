@@ -46,3 +46,17 @@ std::string GLTranslateError(unsigned int gl_error)
     }
     return result;
 }
+
+void Renderer::Draw(const VertexArray& vertex_array, const IndexBuffer& index_buffer, const Shader& shader) const
+{
+    shader.Bind();
+    // shader.SetUniform4f()
+    vertex_array.Bind();
+    index_buffer.Bind();
+    GLDebug(glDrawElements(GL_TRIANGLES, index_buffer.count(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::Clear() const
+{
+    GLDebug(glClear(GL_COLOR_BUFFER_BIT));
+}

@@ -1,7 +1,6 @@
 #ifndef __VERTEX_ARRAY__
 #define __VERTEX_ARRAY__
 #include "vertex_buffer.h"
-#include "renderer.h"
 #include <vector>
 #include <GL/glew.h>
 
@@ -19,7 +18,7 @@ struct VertexBufferElement
         case GL_UNSIGNED_INT:   return 4;
         case GL_UNSIGNED_BYTE:  return 1;
         }
-        ASSERT(false);
+        throw "unsupported type";
         return 0;
     }
 }; 

@@ -10,7 +10,7 @@ public:
 
     void Bind() const;
     void Unbind() const;
-    unsigned int count();
+    unsigned int count() const;
     
 private:
     unsigned int renderer_id_;

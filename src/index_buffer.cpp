@@ -20,7 +20,7 @@ void IndexBuffer::Unbind() const
 {
     GLDebug(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
-unsigned int IndexBuffer::count()
+unsigned int IndexBuffer::count() const
 {
     return count_;
 }

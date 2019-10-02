@@ -25,6 +25,9 @@ set(SRC_FILES src/main.cpp
               src/vertex_buffer.cpp 
               src/vertex_array.cpp
               src/shader.cpp
+              src/glf_texture.cpp
+              include/outsource/stb_image/stb_image.cpp
+              
 )
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})

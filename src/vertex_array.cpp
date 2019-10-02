@@ -1,4 +1,5 @@
 #include "vertex_array.h"
+#include "renderer.h"
 
 template<>
 void VertexBufferLayout::Push<float>(unsigned int count)

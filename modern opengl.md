@@ -433,18 +433,104 @@ before every draw calls.
 it **might** be faster to use a single global VAO (NVIDIA said so). they are however recommended by opengl. it's different on each environment/platform. needs some
 benchmarking.
 
-## 8. OOP Abstraction
-we break down the code into several objects
-* Renderer : takes care of drawing and error handling
-* VertexBuffer : generates & binds vertex bufffers, has destructor
-* IndexBuffer : manages index buffers, has destructor
+#### OOP
+at this point we can make abstractions for index buffers, vertex buffers, vertex arrays, shaders and renderer.
 
-### 8.1. scopes
-our VertexBuffer and IndexBuffer objects are stack allocated, which means their destructor will be called when the `main()` scope ends. however before the scope 
-ends, we call `glfwTerminate()`. this destroys our opengl context which oddly creates an opengl error, meaning the loop `while(glGetError() != GL_NO_ERROR);` will 
-never end, i.e. the next function to be called with `GLDebug` won't let the program exit.<br>
-one solution would be to heap allocate the buffers and delete them before the context is destroyed, which is what we should be doing anyway.<br>
-another solution would be to make an arbitrary scope to have the destructors called before the context is destroyed.
+## 8. Textures
+an image we can use in rendering, which is sent to the GPU and is accessible in the shader.
 
-### 8.2. vertex arrays
-this object should bind a VertexBuffer object with some sort of layout.
+### 8.1. creating a texture
+we use stb_image to handle loading of textures into RAM. opengl expects the texture to start at the bottom left, not top left. this is why we flip the images 
+vertically on load.
+
+```cpp
+glGenTextures(1, &renderer_id_);
+glBindTexture(GL_TEXTURE_2D, renderer_id_);
+
+stbi_set_flip_vertically_on_load(1);
+local_buffer_ = stbi_load(file_path_.c_str(), &width_, &height_, &bits_per_pixel_, 4);
+```
+we then set some of the parameters provided by the opengl api. `MIN` and `MAG` filters specify what opengl does when the texture is larger bzw. smaller than the
+area it's mapped on to. another option would be `GL_NEAREST`.
+```cpp    
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, local_buffer_);
+```
+we then unbind the texture and free the local buffer. sometimes it might be necessary to keep it in case we want to sample from it.
+```cpp
+glBindTexture(GL_TEXTURE_2D, 0);
+if(local_buffer_)
+    stbi_image_free(local_buffer_);
+```
+
+### 8.2. binding
+in opengl we have up to 32 texture slots for each texture enum. it's platform dependent how many we get. here we actiave the first texture and bind it.
+```cpp
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, renderer_id_);
+```
+
+### 8.2. shader code
+we have to send a uniform (1i) to our shader to specift which slot we're accessing.
+```cpp
+shader.SetUniform1i("u_texture", 0);
+```
+#### texture coordinates
+using texture coordinates, we specify which part of the image each vertex represents. in the fragment shader we interpolate between these coordinates to get the
+correct color for that pixel. 
+
+we extend the vertex buffer to now contain vertex coordinates and their respective texture coordinates. we also increase the size of our vertex buffer and add the
+new layout
+```cpp
+float positions[] = {
+    -0.5f,-0.5f, 0.0f, 0.0f,  // 0
+        0.5f,-0.5f, 1.0f, 0.0f,  // 1
+        0.5f, 0.5f, 1.0f, 1.0f,  // 2
+    -0.5f, 0.5f, 0.0f, 1.0f   // 3
+};
+VertexBuffer vb(positions, 4 * 4 *sizeof(float));
+VertexBufferLayout layout;
+layout.Push<float>(2);
+layout.Push<float>(2);
+va.AddBuffer(vb, layout);
+```
+in the vertex shader we get the texture coordinates and also mark them as output to send them to the fragment shader. in the fragment shader we first get the 
+texture coordinates from the vertex shader and then use a `sampler2D` to sample from the texture based on the coordinates.
+```cs
+#shader vertex
+#version 330 core
+layout(location = 0) in vec4 position;
+layout(location = 1) in vec2 tex_coord;
+out vec2 v_texcoord;
+void main()
+{
+    gl_Position = position;
+    v_texcoord = tex_coord;
+};
+#shader fragment
+#version 330 core
+layout(location = 0) out vec4 color;
+in vec2 v_texcoord
+uniform vec4 u_color;
+uniform sampler2D u_texture;
+void main()
+{
+    vec4 tex_color = texture(u_texture, v_texcoord); 
+    color = tex_color;
+};
+```
+### 8.3. blending
+we should also enable blending somewhere to get the alpha channel working
+```cpp
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+glEnable(GL_BLEND));
+```
+this decides how the output of our fragment shader is mixed with our draw buffer. the parameters define how the RGBA values are computed for source and destionation
+respectively. by default the values are `GL_ONE` & `GL_ZERO` <br>
+we can also specify a blend function.
+```cpp
+glBlendEquation(GL_FUNC_ADD);
+```

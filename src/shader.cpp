@@ -91,9 +91,15 @@ ShaderProgramSource Shader::ParseShader()
 void Shader::SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3)
 {
     GLDebug(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
-
 }
-
+void Shader::SetUniform1i(const std::string &name, int v0)
+{
+    GLDebug(glUniform1i(GetUniformLocation(name), v0));
+}
+void Shader::SetUniform1f(const std::string &name, float v0)
+{
+    GLDebug(glUniform1f(GetUniformLocation(name), v0));
+}
 int Shader::GetUniformLocation(const std::string& name)
 {
     if (uniform_cache_.find(name) != uniform_cache_.end())

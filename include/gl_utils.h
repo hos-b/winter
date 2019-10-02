@@ -6,12 +6,6 @@
 #include <iostream>
 #include <string>
 
-
-
 GLFWwindow* BoilerPlate();
-std::string ReadShaderFromFile(const std::string&);
-std::string ReadShaderFromFile(const std::string&);
-unsigned int CreateShaders(const std::string&, const std::string&);
-
 
 #endif
