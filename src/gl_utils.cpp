@@ -9,8 +9,8 @@ GLFWwindow* BoilerPlate()
     if (!glfwInit())
         std::cout << "glfw init failed" << std::endl;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -72,18 +72,4 @@ std::string ReadShaderFromFile(const std::string& filename)
     std::ifstream t(filename);
     std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
     return str;
-}
-void GLClearError()
-{
-    while(glGetError() != GL_NO_ERROR);
-}
-bool GLLogCall(const char *function_name, const char* file, int line)
-{
-    if(GLenum error = glGetError())
-    {
-        std::cout << "[OpenGL Error " << error << "] at " << function_name <<
-           " in " << file << ":" << line << std::endl;
-        return false;
-    }
-    return true;
 }

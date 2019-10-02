@@ -390,7 +390,6 @@ glEnableVertexAttribArray(0);
 
 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_id);
 glUseProgram(shader);
-glUniform4f(location, r, 0.3f, 1.0f, 1.0f);
 ```
 a vertex array objects contains a binding between a vertex buffer (or buffers) and the attribute layout. our new approach will be
 bind the shader, bind vertex array, bind index buffer, draw. vertex arrays are mandatory and a default one is created automatically 
@@ -435,3 +434,17 @@ it **might** be faster to use a single global VAO (NVIDIA said so). they are how
 benchmarking.
 
 ## 8. OOP Abstraction
+we break down the code into several objects
+* Renderer : takes care of drawing and error handling
+* VertexBuffer : generates & binds vertex bufffers, has destructor
+* IndexBuffer : manages index buffers, has destructor
+
+### 8.1. scopes
+our VertexBuffer and IndexBuffer objects are stack allocated, which means their destructor will be called when the `main()` scope ends. however before the scope 
+ends, we call `glfwTerminate()`. this destroys our opengl context which oddly creates an opengl error, meaning the loop `while(glGetError() != GL_NO_ERROR);` will 
+never end, i.e. the next function to be called with `GLDebug` won't let the program exit.<br>
+one solution would be to heap allocate the buffers and delete them before the context is destroyed, which is what we should be doing anyway.<br>
+another solution would be to make an arbitrary scope to have the destructors called before the context is destroyed.
+
+### 8.2. vertex arrays
+this object should bind a VertexBuffer object with some sort of layout.
