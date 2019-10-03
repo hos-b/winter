@@ -6,6 +6,6 @@
 #include <iostream>
 #include <string>
 
-GLFWwindow* BoilerPlate();
+GLFWwindow* BoilerPlate(unsigned int width, unsigned int height);
 
 #endif

@@ -486,10 +486,10 @@ we extend the vertex buffer to now contain vertex coordinates and their respecti
 new layout
 ```cpp
 float positions[] = {
-    -0.5f,-0.5f, 0.0f, 0.0f,  // 0
-        0.5f,-0.5f, 1.0f, 0.0f,  // 1
-        0.5f, 0.5f, 1.0f, 1.0f,  // 2
-    -0.5f, 0.5f, 0.0f, 1.0f   // 3
+   -0.5f,-0.5f, 0.0f, 0.0f,  // 0
+    0.5f,-0.5f, 1.0f, 0.0f,  // 1
+    0.5f, 0.5f, 1.0f, 1.0f,  // 2
+   -0.5f, 0.5f, 0.0f, 1.0f   // 3
 };
 VertexBuffer vb(positions, 4 * 4 *sizeof(float));
 VertexBufferLayout layout;
@@ -533,4 +533,144 @@ respectively. by default the values are `GL_ONE` & `GL_ZERO` <br>
 we can also specify a blend function.
 ```cpp
 glBlendEquation(GL_FUNC_ADD);
+```
+### 8.4. repeat
+another way to map textures onto surfaces is to repeat them. this is specified when we create the shaders.
+```cpp
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+```
+we have to specify in our vertex buffer how many times we want them to repeat by adjusting their respective s,t values
+```cpp
+float positions[] = {
+        -0.5f,-0.5f, 0.0f, 0.0f,  // 0
+         0.5f,-0.5f, 2.0f, 0.0f,  // 1
+         0.5f, 0.5f, 2.0f, 2.0f,  // 2
+        -0.5f, 0.5f, 0.0f, 2.0f   // 3
+    };
+```
+this will repeat them twice in each direction
+
+## 9. Mathematics Library
+[glm](https://github.com/g-truc/glm) is an open source header-only library specifically made for use with opengl. e.g. all matrix implementations are column major.
+
+### 9.1. 2D projection matrix
+right now our window has a 4:3 aspect ration but opengl uses a 1:1 by default. we can change that using glm::ortho
+```cpp
+glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+```
+where the arguements are left, right, bottom, top, zNear, zFar. having this projection matrix changes how are vertex positions are interpreted. now they have to be
+in the same range we defined in the orthographic matrix but in the end opengl only draws the vertices in the (-1, 1) frustum and culls the rest. to correctly remap the values back to this range, we multiply our vertices with this matrix in the shader.
+```cs
+...
+uniform mat4 u_model_view_projection;
+void main()
+{
+    gl_Position = u_model_view_projection * position;
+    ...
+};
+```
+we also have to send the uniform to the shader. the necessary implementation should be created in the shader class. since it doesn't need to be transposed, we pass
+`GL_FALSE` for the third arguement.
+```cpp
+void Shader::SetUniform4x4f(const std::string &name, glm::mat4& mat)
+{
+    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]);
+}
+```
+to make things a bit easier, we can move to pixel space, i.e. set the projection matrix such that the minimum and maximum values defines our windows size. this way
+we'd also have to change how our vertices are positioned
+```cpp
+glm::mat4 projection = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+float positions[] = {
+        100.0f, 100.0f, 0.0f, 0.0f,  // 0
+        300.0f, 100.0f, 1.0f, 0.0f,  // 1
+        300.0f, 300.0f, 1.0f, 1.0f,  // 2
+        100.0f, 300.0f, 0.0f, 1.0f   // 3
+    };
+```
+### 9.2. view matrix
+2D position = projection x view x model x vertex<br>
+the view matrix defines the transform of our camera. the opengl camera is on the z axis, placed at 1, looking in the negative z direction. we can't actually move the
+camera but we can move everything else. e.g. instead of moving our camera to the right, we move our objects to the left.
+```cpp
+glm::mat4 view =  glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+glm::mat4 mvp = projection*view;
+shader.SetUniform4x4f("u_model_view_projection", mvp);
+```
+
+### 9.3. model matrix
+the model matrix defines it for the model itself. this is more intuitive than adjusting the view matrix. we start off with an identity matrix and translate it
+```cpp
+...
+glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(300, 300, 0));
+glm::mat4 mvp = projection*view*model;
+shader.SetUniform4x4f("u_model_view_projection", mvp);
+```
+
+## 10. imGui
+"Dear [ImGui](https://github.com/ocornut/imgui) is a bloat-free graphical user interface library for C++. It outputs optimized vertex buffers that you can render anytime in your 3D-pipeline enabled application. It is fast, portable, renderer agnostic and self-contained (no external dependencies)." nice ...
+
+### 10.1. installation
+get the code (currenly using release version 1.73), remove everything other than base h/cpp files, add every opengl3/glfw related h/cpp file in examples other than
+main.cpp. keep that for reference.
+
+### 10.2. basic example
+using the provided example from imgui, we mix is with our code
+```cpp
+GLFWwindow* window = ...;
+//imgui
+const char* glsl_version = "#version 330";
+ImGui::CreateContext();
+ImGuiIO io = ImGui::GetIO(); (void)io;
+ImGui::StyleColorsDark();
+ImGui_ImplGlfw_InitForOpenGL(window, true);
+ImGui_ImplOpenGL3_Init(glsl_version);
+```
+for the rendering loop we have
+```cpp
+while (!glfwWindowShouldClose(window))
+    {
+        renderer.Clear();
+
+        // start the imgui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // opengl code
+        ...
+
+        // render imgui stuff
+        static float f = 0.0f;
+        static int counter = 0;
+
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+        ImGui::Checkbox("Another Window", &show_another_window);
+
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+```
+and before killing the glfw context, we clean up
+```cpp
+ImGui_ImplOpenGL3_Shutdown();
+ImGui_ImplGlfw_Shutdown();
+ImGui::DestroyContext(NULL);
 ```

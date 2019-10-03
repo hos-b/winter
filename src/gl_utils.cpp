@@ -2,18 +2,18 @@
 #include <fstream>
 #include <streambuf>
 
-GLFWwindow* BoilerPlate()
+GLFWwindow* BoilerPlate(unsigned int width, unsigned int height)
 {
     // GLFW init
     GLFWwindow* window;
     if (!glfwInit())
         std::cout << "glfw init failed" << std::endl;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

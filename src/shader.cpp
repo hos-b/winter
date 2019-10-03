@@ -100,6 +100,10 @@ void Shader::SetUniform1f(const std::string &name, float v0)
 {
     GLDebug(glUniform1f(GetUniformLocation(name), v0));
 }
+void Shader::SetUniform4x4f(const std::string &name, glm::mat4& mat)
+{
+    GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
+}
 int Shader::GetUniformLocation(const std::string& name)
 {
     if (uniform_cache_.find(name) != uniform_cache_.end())

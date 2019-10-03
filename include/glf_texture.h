@@ -6,7 +6,7 @@
 class Texture
 {
 public:
-    Texture(const std::string& file_path);
+    Texture(const std::string& file_path, unsigned int gl_mode);
     ~Texture();
 
     void Bind(unsigned int slot = 0) const;

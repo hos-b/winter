@@ -1,8 +1,8 @@
 #include "glf_texture.h"
 #include "renderer.h"
-#include "outsource/stb_image/stb_image.h"
+#include <stb_image/stb_image.h>
 
-Texture::Texture(const std::string& file_path) : file_path_(file_path), local_buffer_(nullptr), width_(0), height_(0), bits_per_pixel_(0)
+Texture::Texture(const std::string& file_path, unsigned int gl_mode) : file_path_(file_path), local_buffer_(nullptr), width_(0), height_(0), bits_per_pixel_(0)
 {
     GLDebug(glGenTextures(1, &renderer_id_));
     GLDebug(glBindTexture(GL_TEXTURE_2D, renderer_id_));
@@ -12,8 +12,8 @@ Texture::Texture(const std::string& file_path) : file_path_(file_path), local_bu
 
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gl_mode));
+    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gl_mode));
 
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, local_buffer_));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
