@@ -34,8 +34,8 @@ public:
 private:
     unsigned int renderer_id_;
     std::string file_path_;
-    int GetUniformLocation(const std::string& name);
-    std::unordered_map<std::string, int> uniform_cache_;
+    int GetUniformLocation(const std::string& name) const;
+    mutable std::unordered_map<std::string, int> uniform_cache_;
 };
 
 #endif

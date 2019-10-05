@@ -1,7 +1,6 @@
 #ifndef __GL_F_TEST__
 #define __GL_F_TEST__
 
-#include "framework/renderer.h"
 
 #include <vector>
 #include <string>

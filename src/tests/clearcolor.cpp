@@ -1,4 +1,5 @@
 #include "tests/clearcolor.h"
+#include "framework/renderer.h"
 
 namespace test{
 

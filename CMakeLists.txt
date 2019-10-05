@@ -31,6 +31,7 @@ set(SRC_FILES src/tests/test_main.cpp
               src/framework/glf_texture.cpp
               # test
               src/tests/test.cpp
+              src/tests/texture.cpp
               src/tests/clearcolor.cpp
               # libraries
               outsource/stb_image/stb_image.cpp

@@ -676,4 +676,4 @@ ImGui::DestroyContext(NULL);
 ```
 ## 11. More Objects
 for rendering the same object twice we have a couple of options. we could use another vertex buffer, with positions and other attributes. we could also draw the same
-object with a different modelview matrix. the first solution is not really memory efficient. the best performance is achieved by using batch rendering.
+object with a different modelview matrix. the first solution is not really memory efficient. the best performance is achieved by using batch rendering. tbc...

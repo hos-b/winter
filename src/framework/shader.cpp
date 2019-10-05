@@ -104,10 +104,11 @@ void Shader::SetUniform4x4f(const std::string &name, glm::mat4& mat)
 {
     GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
 }
-int Shader::GetUniformLocation(const std::string& name)
+int Shader::GetUniformLocation(const std::string& name) const
 {
-    if (uniform_cache_.find(name) != uniform_cache_.end())
-        return uniform_cache_[name];
+    auto search_result = uniform_cache_.find(name);
+    if (search_result != uniform_cache_.end())
+        return search_result->second;
     GLDebug(int location = glGetUniformLocation(renderer_id_, name.c_str()));
     if (location == -1)
         std::cout << "warning : uniform " << name << " doesn't exist" << std::endl;

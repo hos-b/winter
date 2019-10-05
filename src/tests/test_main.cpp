@@ -1,3 +1,4 @@
+#include "framework/renderer.h"
 #include "gl_utils.h"
 
 #include <unistd.h>
@@ -9,6 +10,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include "tests/clearcolor.h"
+#include "tests/texture.h"
 
 int main(void)
 {
@@ -22,10 +24,6 @@ int main(void)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // blending options
-    GLDebug(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    GLDebug(glEnable(GL_BLEND));
-
     Renderer renderer;
 
     // vsync
@@ -37,6 +35,7 @@ int main(void)
     current_test = menu;
 
     menu->RegisterTest<test::ClearColorTest>("Clear Color");
+    menu->RegisterTest<test::TextureTest>("Texture");
 
     while (!glfwWindowShouldClose(window))
     {
