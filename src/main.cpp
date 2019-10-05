@@ -1,18 +1,18 @@
-#include "renderer.h"
-#include "vertex_buffer.h"
-#include "index_buffer.h"
-#include "vertex_array.h"
-#include "shader.h"
+#include "framework/vertex_buffer.h"
+#include "framework/index_buffer.h"
+#include "framework/vertex_array.h"
+#include "framework/glf_texture.h"
+#include "framework/renderer.h"
+#include "framework/shader.h"
 #include "gl_utils.h"
-#include "glf_texture.h"
 
 #include <unistd.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 int main(void)
 {
@@ -32,10 +32,10 @@ int main(void)
 
     // vertex & index buffers
     float positions[] = {
-        100.0f, 100.0f, 0.0f, 0.0f,  // 0
-        300.0f, 100.0f, 3.0f, 0.0f,  // 1
-        300.0f, 300.0f, 3.0f, 3.0f,  // 2
-        100.0f, 300.0f, 0.0f, 3.0f   // 3
+       -100.0f, -100.0f, 0.0f, 0.0f,  // 0
+        100.0f, -100.0f, 3.0f, 0.0f,  // 1
+        100.0f,  100.0f, 3.0f, 3.0f,  // 2
+       -100.0f,  100.0f, 0.0f, 3.0f   // 3
     };
     unsigned int indices[] = {
         0, 1, 2,
@@ -63,7 +63,7 @@ int main(void)
 
     // projection, view, model matrces
     glm::mat4 projection = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -1.0f, 1.0f);
-    glm::mat4 view =  glm::translate(glm::mat4(1.0f), glm::vec3(-100, 0, 0));
+    glm::mat4 view =  glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(150, 150, 0));
     glm::mat4 mvp = projection * view * model;
     shader.SetUniform4x4f("u_model_view_projection", mvp);
@@ -84,10 +84,9 @@ int main(void)
     // vsync
     glfwSwapInterval(1);
 
-    float r = 0.0f;
-
     // imgui state
-    glm::vec3 translation(150, 150, 0);
+    glm::vec3 translation_a(100, 100, 0);
+    glm::vec3 translation_b(400, 100, 0);
     while (!glfwWindowShouldClose(window))
     {
         renderer.Clear();
@@ -97,23 +96,29 @@ int main(void)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // shader should be bound for uniforms
-        shader.Bind();
-        shader.SetUniform4f("u_color", r, 0.3f, 1.0f, 1.0f);
 
         // change translation in x direction with imgui
-        model = glm::translate(glm::mat4(1.0f), translation);
+        model = glm::translate(glm::mat4(1.0f), translation_a);
+        mvp = projection * view * model;
+        
+
+        // draw the current bound index buffer of type uint, count 6
+        // renderer binds both buffer before the draw call
+        shader.Bind();
+        model = glm::translate(glm::mat4(1.0f), translation_a);
         mvp = projection * view * model;
         shader.SetUniform4x4f("u_model_view_projection", mvp);
+        renderer.Draw(va, ib, shader);
 
-        va.Bind();
-        ib.Bind();
-        // draw the current bound index buffer of type uint, count 6
+        model = glm::translate(glm::mat4(1.0f), translation_b);
+        mvp = projection * view * model;
+        shader.SetUniform4x4f("u_model_view_projection", mvp);
         renderer.Draw(va, ib, shader);
 
         // render imgui stuff
         ImGui::Begin("model translate");
-        ImGui::SliderFloat3("float", &translation.x, 0.0f, 640.0f);
+        ImGui::SliderFloat3("Translation A", &translation_a.x, 0.0f, 640.0f);
+        ImGui::SliderFloat3("Translation B", &translation_b.x, 0.0f, 640.0f);
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         ImGui::End();
         ImGui::Render();

@@ -1,6 +1,6 @@
 #ifndef __VERTEX_ARRAY__
 #define __VERTEX_ARRAY__
-#include "vertex_buffer.h"
+#include "framework/vertex_buffer.h"
 #include <vector>
 #include <GL/glew.h>
 

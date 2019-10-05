@@ -1,6 +1,6 @@
-#include "gl_utils.h"
 #include <fstream>
 #include <streambuf>
+#include "gl_utils.h"
 
 GLFWwindow* BoilerPlate(unsigned int width, unsigned int height)
 {
@@ -9,11 +9,11 @@ GLFWwindow* BoilerPlate(unsigned int width, unsigned int height)
     if (!glfwInit())
         std::cout << "glfw init failed" << std::endl;
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(width, height, "glFramework", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

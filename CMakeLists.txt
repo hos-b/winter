@@ -20,14 +20,19 @@ include_directories(include
                     ${GLEW_INCLUDE_DIRS}
 )
 
-set(SRC_FILES src/main.cpp 
+set(SRC_FILES src/tests/test_main.cpp
+            # src/main.cpp 
               src/gl_utils.cpp 
-              src/renderer.cpp 
-              src/index_buffer.cpp 
-              src/vertex_buffer.cpp 
-              src/vertex_array.cpp
-              src/shader.cpp
-              src/glf_texture.cpp
+              src/framework/renderer.cpp 
+              src/framework/index_buffer.cpp 
+              src/framework/vertex_buffer.cpp 
+              src/framework/vertex_array.cpp
+              src/framework/shader.cpp
+              src/framework/glf_texture.cpp
+              # test
+              src/tests/test.cpp
+              src/tests/clearcolor.cpp
+              # libraries
               outsource/stb_image/stb_image.cpp
               outsource/imgui/imgui.cpp
               outsource/imgui/imgui_demo.cpp
