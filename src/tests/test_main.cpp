@@ -1,4 +1,5 @@
 #include "framework/renderer.h"
+#include "framework/debug.h"
 #include "gl_utils.h"
 
 #include <unistd.h>

@@ -1,5 +1,6 @@
 #include "framework/glf_texture.h"
-#include "framework/renderer.h"
+#include "framework/debug.h"
+#include <GL/glew.h>
 #include <stb_image/stb_image.h>
 
 Texture::Texture(const std::string& file_path, unsigned int gl_mode) : file_path_(file_path), local_buffer_(nullptr), width_(0), height_(0), bits_per_pixel_(0)

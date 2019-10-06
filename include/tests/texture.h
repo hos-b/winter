@@ -22,6 +22,7 @@ namespace test
     private:
         glm::mat4 model_, view_, projection_, mvp_;
         glm::vec3 translation_a_, translation_b_;
+        glm::vec3 rotation_;
 
         Shader* shader_;
         IndexBuffer* ib_;

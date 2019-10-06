@@ -2,7 +2,6 @@
 #define __GL_SHADER_H__
 
 #include <string>
-#include <iostream>
 #include <unordered_map>
 #include <glm/glm.hpp>
 
@@ -25,11 +24,9 @@ public:
     ShaderProgramSource ParseShader();
     unsigned int CreateShaders(const std::string& vertex_shader, const std::string& fragment_shader);
 
-    // set uniforms
-    void SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3);
-    void SetUniform4x4f(const std::string &name, glm::mat4& mat);
-    void SetUniform1f(const std::string &name, float v0);
-    void SetUniform1i(const std::string &name, int v0);
+    // uniform template
+    template<class T, int N, class... Ts>
+    void SetUniform(const std::string& name, Ts... args);
     
 private:
     unsigned int renderer_id_;

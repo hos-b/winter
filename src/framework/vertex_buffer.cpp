@@ -1,5 +1,6 @@
 #include "framework/vertex_buffer.h"
-#include "framework/renderer.h"
+#include "framework/debug.h"
+#include <GL/glew.h>
 
 VertexBuffer::VertexBuffer(const void* data, unsigned int size)
 {

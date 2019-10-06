@@ -1,6 +1,8 @@
 #include "framework/shader.h"
-#include "framework/renderer.h"
+#include "framework/debug.h"
 
+
+#include <GL/glew.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -87,23 +89,6 @@ ShaderProgramSource Shader::ParseShader()
     return { stringstream[0].str(), stringstream[1].str() };
 }
 
-// set uniforms
-void Shader::SetUniform4f(const std::string &name, float v0, float v1, float v2, float v3)
-{
-    GLDebug(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
-}
-void Shader::SetUniform1i(const std::string &name, int v0)
-{
-    GLDebug(glUniform1i(GetUniformLocation(name), v0));
-}
-void Shader::SetUniform1f(const std::string &name, float v0)
-{
-    GLDebug(glUniform1f(GetUniformLocation(name), v0));
-}
-void Shader::SetUniform4x4f(const std::string &name, glm::mat4& mat)
-{
-    GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
-}
 int Shader::GetUniformLocation(const std::string& name) const
 {
     auto search_result = uniform_cache_.find(name);
@@ -114,4 +99,31 @@ int Shader::GetUniformLocation(const std::string& name) const
         std::cout << "warning : uniform " << name << " doesn't exist" << std::endl;
     uniform_cache_[name] = location;
     return location;
+}
+
+template<>
+void Shader::SetUniform<float, 1>(const std::string& name, float arg)
+{
+    GLDebug(glUniform1f(GetUniformLocation(name), arg));
+}
+
+template<>
+void Shader::SetUniform<int, 1>(const std::string &name, int arg)
+{
+    GLDebug(glUniform1i(GetUniformLocation(name), arg));
+}
+template<>
+void Shader::SetUniform<float, 4>(const std::string &name, float arg0, float arg1, float arg2, float arg3)
+{
+    GLDebug(glUniform4f(GetUniformLocation(name), arg0, arg1, arg2, arg3));
+}
+template<>
+void Shader::SetUniform<float*, 16>(const std::string &name, float *arg)
+{
+    GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, arg));
+}
+template<>
+void Shader::SetUniform<glm::mat4, 16>(const std::string &name, glm::mat4 arg)
+{
+    GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &arg[0][0]));
 }

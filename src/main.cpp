@@ -66,12 +66,12 @@ int main(void)
     glm::mat4 view =  glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(150, 150, 0));
     glm::mat4 mvp = projection * view * model;
-    shader.SetUniform4x4f("u_model_view_projection", mvp);
+    shader.SetUniform<glm::mat4, 16>("u_model_view_projection", mvp);
 
     // textures
     Texture texture("../res/textures/fb.png", GL_REPEAT);
     texture.Bind();
-    shader.SetUniform1i("u_texture", 0);
+    shader.SetUniform<int, 1>("u_texture", 0);
 
     // unbind everything
     va.Unbind();
@@ -107,12 +107,12 @@ int main(void)
         shader.Bind();
         model = glm::translate(glm::mat4(1.0f), translation_a);
         mvp = projection * view * model;
-        shader.SetUniform4x4f("u_model_view_projection", mvp);
+        shader.SetUniform<glm::mat4, 16>("u_model_view_projection", mvp);
         renderer.Draw(va, ib, shader);
 
         model = glm::translate(glm::mat4(1.0f), translation_b);
         mvp = projection * view * model;
-        shader.SetUniform4x4f("u_model_view_projection", mvp);
+        shader.SetUniform<glm::mat4, 16>("u_model_view_projection", mvp);
         renderer.Draw(va, ib, shader);
 
         // render imgui stuff

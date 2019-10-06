@@ -65,7 +65,8 @@ int main()
     }
 }
 ```
-## 2. Drawing a Simple Triangle
+## 2. Vertex Buffers and Atttribute Layouts
+we want to draw a triangle
 
 ### 2.1. generating a buffer
 everything that's generated gets a unique `uint` identifier. to generate a buffer we use
@@ -135,16 +136,49 @@ we also need to enable the attribut by its index. for a simple 2D position attri
 glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, (const void*)0);
 glEnableVertexAttribArray(0);
 ```
-it doesn't matter where we enable the attribute as long as the buffer is bound.
+it doesn't matter where we enable the attribute as long as the buffer is bound
+
 ## 3. Shaders
-the code might already be able to draw a triangle. this is because some drivers already provide a default shader. the primary purpose of the 
-vertex shader is to define where in the window the vertices are drawn. it gets called once for every vertex that we have.<br>
+the code might already be able to draw a triangle. this is because some drivers already provide a default shader. shaders are programmable parts of the rendering
+pipeline. we have 5 shaders in opengl but normally only the first two are used.
+* vertex shader
+* fragment shader
+* geometry shader
+* tesselation shader
+* compute shader
+
+#### vertex shader
+the primary purpose of the vertex shader is to define where in the window the vertices are drawn. it gets called once for every vertex that we have. it's not optional and must store something in `gl_Position` as it is used by later stages. it can also specify additional outputs that can be used by later user-defined shaders. input is the vertex data itself.
+#### fragment shader
 the fragment shader is called once per every pixel that get rasterized and determines the color of that pixel. this means the fragment shader
-gets called way more often and has to be optimized. we can also do some calculations in the vertex shader and pass it on to the fragment shader
-to save computation time. a shader can access data from the cpu in the form of opengl buffers and uniforms.
+gets called way more often and has to be optimized. it's optional but very often used. most important output is a `vec4` color for each pixel.s
 
+#### rendering pipleline
+* vertex specification
+* vertex shader
+* tesselation shader
+* geometry shader
+* vertex post-processing
+* primitive assembly
+* rasterization
+* fragment shader
+* per-sample operations
 
+tesselation shader allows us to divide data into smaller primitives. appeared in version 4.0, can be used to add higher levels of detail **dynamically**. <br>
+geometry shader works on groups of vertices or primitives. it's used to alter primitives.<br>
+vertex post processing consists of transform feedback and clipping. transform feedback, if enabled, saves the result of vertex and geometry shaders in a buffer for later use. clipping removes non-visible primitives. also converts positions from clip space to window space.<br>
+primitive assembly takes care of converting vertices into a series of primitives. it also performs face culling <br>
+rasterization converts primitives into fragments, i.e. pixel data. fragments are interpolated based on vertex positions<br>
+per sample operatios is a series of test to see if should must be drawn. most importantly depth test. it also takes care of blending
 ### 3.1. compiling shaders
+1. create empty program
+2. create empty shaders
+3. attach shader source code to shaders
+4. compile shaders
+5. attach them to the program
+6. link program
+7. validate program
+
 we could read the shaders from a file. they are stored in `std::string`s but will need to be cast as plain `char*` for opengl to compile them.
 ```cpp
 static unsigned int CompileShader(const std::string& source, unsigned int type)
@@ -374,6 +408,8 @@ void main()
     color = u_color;
 }
 ```
+#### Note
+make sure the shader is bound before using `glUniform`!
 ## 7. Vertex Arrays
 they are a way of binding a vertex buffer with a layout specification. right now we generate and bind our vertex buffer, specify its attributes and also bind our index buffer. if we want to draw two buffers with different layouts, we have to explicitly change layouts. the layout is not bound to the buffer.<br>
 if we unbind everyhing using these three lines
@@ -419,15 +455,26 @@ set before initializing glew.
 glewExperimental = GL_TRUE;
 glewinit();
 ```
-### 7.2. approaches
+### 7.3. approaches
 there are two general ways to handle VAOs.
 #### global VAO
 as mentioned, it is mandatory to create a vertex array in core profile. technically it is possible to create one VAO and leave it bound, bind a vertex buffer and
 specify its layout, every time an object is to be drawn. this is the same thing the compatibility profile does for us.
 
 #### seperate VAO
-we could also create a vertex array object for every piece of geometry that we want to draw, bind its vertex buffer, define its attributes and then bind the VAO 
-before every draw calls.
+vertex specification is done as such:
+1. generate a vertex array object, get the id
+2. bind it using the id
+3. generate a vertex buffer, get the id
+4. bind the id
+5. attach vertex data to that buffer
+6. define attribute pointer formatting
+7. enable it
+8. unbind VAO and VBO, do it for next object
+and then we draw:
+1. activate shader
+2. bind VAO of the object to be drawn
+3. call `glDrawArrays`
 
 #### verdict
 it **might** be faster to use a single global VAO (NVIDIA said so). they are however recommended by opengl. it's different on each environment/platform. needs some
@@ -674,6 +721,4 @@ ImGui_ImplOpenGL3_Shutdown();
 ImGui_ImplGlfw_Shutdown();
 ImGui::DestroyContext(NULL);
 ```
-## 11. More Objects
-for rendering the same object twice we have a couple of options. we could use another vertex buffer, with positions and other attributes. we could also draw the same
-object with a different modelview matrix. the first solution is not really memory efficient. the best performance is achieved by using batch rendering. tbc...
+## 11. 

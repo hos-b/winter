@@ -1,5 +1,6 @@
 #include "tests/texture.h"
 #include "framework/renderer.h"
+#include "framework/debug.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace test{
@@ -50,12 +51,11 @@ TextureTest::TextureTest()
     view_ =  glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
     model_ = glm::translate(glm::mat4(1.0f), glm::vec3(150, 150, 0));
     mvp_ = projection_ * view_ * model_;
-    shader_->SetUniform4x4f("u_model_view_projection", mvp_);
-
+    shader_->SetUniform<glm::mat4, 16>("u_model_view_projection", mvp_);
     // textures
     texture_ = new Texture("../res/textures/fb.png", GL_REPEAT);
     texture_->Bind();
-    shader_->SetUniform1i("u_texture", 0);   
+    shader_->SetUniform<int, 1>("u_texture", 0);
 }
 void TextureTest::OnRender()
 {
@@ -65,18 +65,26 @@ void TextureTest::OnRender()
     shader_->Bind();
     model_ = glm::translate(glm::mat4(1.0f), translation_a_);
     mvp_ = projection_ * view_ * model_;
-    shader_->SetUniform4x4f("u_model_view_projection", mvp_);
+    shader_->SetUniform<float*, 16>("u_model_view_projection", &mvp_[0][0]);
     renderer.Draw(*va_, *ib_, *shader_);
 
     model_ = glm::translate(glm::mat4(1.0f), translation_b_);
+    model_ = glm::rotate(model_, rotation_.x ,glm::vec3(1,0,0));
+    model_ = glm::rotate(model_, rotation_.y ,glm::vec3(0,1,0));
+    model_ = glm::rotate(model_, rotation_.z ,glm::vec3(0,0,1));
     mvp_ = projection_ * view_ * model_;
-    shader_->SetUniform4x4f("u_model_view_projection", mvp_);
+    shader_->SetUniform<float*, 16>("u_model_view_projection", &mvp_[0][0]);
     renderer.Draw(*va_, *ib_, *shader_);
+
+    shader_->SetUniform<float, 1>("float1", 1.0f);
+    shader_->SetUniform<float, 4>("float4", 1.0f, 2.0f, 1.1f, 2.2f);
+    shader_->SetUniform<int, 1>("int1", 1);
 }
 void TextureTest::OnImGuiRender()
 {
     ImGui::SliderFloat3("Translation A", &translation_a_.x, 0.0f, 640.0f);
     ImGui::SliderFloat3("Translation B", &translation_b_.x, 0.0f, 640.0f);
+    ImGui::SliderFloat3("Rotation B", &rotation_.x, 0.0f, 2*glm::pi<float>());
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
 
