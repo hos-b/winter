@@ -1,6 +1,11 @@
-#include "framework/vertex_buffer.h"
-#include "framework/debug.h"
+#include "framework/base/vertex_buffer.h"
+#include "framework/util/debug.h"
 #include <GL/glew.h>
+
+namespace winter
+{
+namespace base
+{
 
 VertexBuffer::VertexBuffer(const void* data, unsigned int size)
 {
@@ -21,3 +26,6 @@ void VertexBuffer::Unbind() const
 {
     GLDebug(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
+
+}// end of base
+}// end of winter

@@ -3,6 +3,11 @@
 
 #include <string>
 
+namespace winter
+{
+namespace base
+{
+
 class Texture
 {
 public:
@@ -22,4 +27,6 @@ private:
     int width_, height_, bits_per_pixel_;
 };
 
+}// end of base
+}// end of winter
 #endif

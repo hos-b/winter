@@ -1,4 +1,4 @@
-#include "framework/debug.h"
+#include "framework/util/debug.h"
 #include <GL/glew.h>
 
 #include <iostream>

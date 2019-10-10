@@ -1,7 +1,12 @@
-#include "framework/glf_texture.h"
-#include "framework/debug.h"
+#include "framework/base/glf_texture.h"
+#include "framework/util/debug.h"
 #include <GL/glew.h>
 #include <stb_image/stb_image.h>
+
+namespace winter
+{
+namespace base
+{
 
 Texture::Texture(const std::string& file_path, unsigned int gl_mode) : file_path_(file_path), local_buffer_(nullptr), width_(0), height_(0), bits_per_pixel_(0)
 {
@@ -36,3 +41,6 @@ void Texture::Unbind() const
 {
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 }
+
+}// end of base
+}// end of winter

@@ -1,9 +1,14 @@
 #ifndef __VERTEX_ARRAY__
 #define __VERTEX_ARRAY__
-#include "framework/vertex_buffer.h"
+#include "framework/base/vertex_buffer.h"
 #include <vector>
 #include <GL/glew.h>
 
+namespace winter
+{
+namespace base
+{
+    
 struct VertexBufferElement
 {
     unsigned int count;
@@ -54,4 +59,6 @@ private:
     unsigned int renderer_id_;
 };
 
+}// end of base
+}// end of shader
 #endif

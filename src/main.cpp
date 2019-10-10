@@ -1,10 +1,11 @@
-#include "framework/vertex_buffer.h"
-#include "framework/index_buffer.h"
-#include "framework/vertex_array.h"
-#include "framework/glf_texture.h"
-#include "framework/renderer.h"
-#include "framework/shader.h"
-#include "gl_utils.h"
+#include "framework/base/vertex_buffer.h"
+#include "framework/base/index_buffer.h"
+#include "framework/base/vertex_array.h"
+#include "framework/base/glf_texture.h"
+#include "framework/base/renderer.h"
+#include "framework/base/shader.h"
+#include "framework/util/gl_utils.h"
+#include "framework/util/debug.h"
 
 #include <unistd.h>
 #include <glm/glm.hpp>
@@ -42,23 +43,23 @@ int main(void)
         2, 3, 0
     };
     // vertex array
-    VertexArray va;
+    winter::base::VertexArray va;
     // vertex buffer
-    VertexBuffer vb(positions, 4 * 4 *sizeof(float));
+    winter::base::VertexBuffer vb(positions, 4 * 4 *sizeof(float));
     // layouts
-    VertexBufferLayout layout;
+    winter::base::VertexBufferLayout layout;
     layout.Push<float>(2);
     layout.Push<float>(2);
     va.AddBuffer(vb, layout);
 
     // index buffer
-    IndexBuffer ib(indices, 6);
+    winter::base::IndexBuffer ib(indices, 6);
 
     // shaders
     char cwd[100];
     getcwd(cwd, 100);
     std::cout << "cwd: " << cwd << std::endl;
-    Shader shader("../res/shaders/basic_shader.glsl");
+    winter::base::Shader shader("../res/shaders/basic_shader.glsl");
     shader.Bind();
 
     // projection, view, model matrces
@@ -69,7 +70,7 @@ int main(void)
     shader.SetUniform<glm::mat4, 16>("u_model_view_projection", mvp);
 
     // textures
-    Texture texture("../res/textures/fb.png", GL_REPEAT);
+    winter::base::Texture texture("../res/textures/fb.png", GL_REPEAT);
     texture.Bind();
     shader.SetUniform<int, 1>("u_texture", 0);
 
@@ -79,8 +80,6 @@ int main(void)
     ib.Unbind();
     shader.Unbind();
 
-    Renderer renderer;
-
     // vsync
     glfwSwapInterval(1);
 
@@ -89,13 +88,11 @@ int main(void)
     glm::vec3 translation_b(400, 100, 0);
     while (!glfwWindowShouldClose(window))
     {
-        renderer.Clear();
-
+        winter::base::Renderer::Clear(winter::base::Renderer::RenderMode::GL2D);
         // start the imgui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
 
         // change translation in x direction with imgui
         model = glm::translate(glm::mat4(1.0f), translation_a);
@@ -108,12 +105,12 @@ int main(void)
         model = glm::translate(glm::mat4(1.0f), translation_a);
         mvp = projection * view * model;
         shader.SetUniform<glm::mat4, 16>("u_model_view_projection", mvp);
-        renderer.Draw(va, ib, shader);
+        winter::base::Renderer::Draw(va, ib, shader);
 
         model = glm::translate(glm::mat4(1.0f), translation_b);
         mvp = projection * view * model;
         shader.SetUniform<glm::mat4, 16>("u_model_view_projection", mvp);
-        renderer.Draw(va, ib, shader);
+        winter::base::Renderer::Draw(va, ib, shader);
 
         // render imgui stuff
         ImGui::Begin("model translate");

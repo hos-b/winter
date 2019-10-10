@@ -1,7 +1,8 @@
-#ifndef __TEST_TEXTURE_H__
-#define __TEST_TEXTURE_H__
+#ifndef __PYRAMID_TEST_H__
+#define __PYRAMID_TEST_H__
 
 #include <glm/glm.hpp>
+
 #include "test.h"
 #include "framework/base/shader.h"
 #include "framework/base/glf_texture.h"
@@ -14,24 +15,23 @@ namespace winter
 {
 namespace test
 {
-
-class TextureTest : public Test
+    
+class PyramidTest : public Test
 {
 public:
-    TextureTest();
-    ~TextureTest();
+    PyramidTest();
+    ~PyramidTest();
     void OnRender();
     void OnImGuiRender();
 private:
     glm::mat4 model_, view_, projection_, mvp_;
-    glm::vec3 translation_a_, translation_b_;
+    glm::vec3 translation_;
     glm::vec3 rotation_;
 
     base::Shader* shader_;
     base::IndexBuffer* ib_;
     base::VertexArray* va_;
     base::VertexBuffer* vb_;
-    base::Texture* texture_;
 };
 
 }// end of test

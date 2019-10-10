@@ -22,17 +22,18 @@ include_directories(include
 
 set(SRC_FILES src/tests/test_main.cpp
             # src/main.cpp 
-              src/gl_utils.cpp 
-              src/framework/debug.cpp 
-              src/framework/shader.cpp
-              src/framework/renderer.cpp 
-              src/framework/glf_texture.cpp
-              src/framework/vertex_array.cpp
-              src/framework/index_buffer.cpp 
-              src/framework/vertex_buffer.cpp 
+              src/framework/util/debug.cpp 
+              src/framework/util/gl_utils.cpp 
+              src/framework/base/shader.cpp
+              src/framework/base/renderer.cpp 
+              src/framework/base/glf_texture.cpp
+              src/framework/base/vertex_array.cpp
+              src/framework/base/index_buffer.cpp 
+              src/framework/base/vertex_buffer.cpp 
               # test
               src/tests/test.cpp
               src/tests/texture.cpp
+              src/tests/pyramid.cpp
               src/tests/clearcolor.cpp
               # libraries
               outsource/imgui/imgui.cpp

@@ -2,6 +2,11 @@
 #define __VERTEX_BUFFER_H__
 
 
+namespace winter
+{
+namespace base
+{
+
 class VertexBuffer
 {
 public:
@@ -14,4 +19,6 @@ private:
     unsigned int renderer_id_;
 };
 
+}// end of base
+}// end of shader
 #endif

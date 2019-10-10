@@ -1,5 +1,10 @@
-#include "framework/vertex_array.h"
-#include "framework/debug.h"
+#include "framework/base/vertex_array.h"
+#include "framework/util/debug.h"
+
+namespace winter
+{
+namespace base
+{
 
 template<>
 void VertexBufferLayout::Push<float>(unsigned int count)
@@ -55,3 +60,6 @@ void VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexBuffe
         offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
     }
 }
+
+}// end of base
+}// end of winter

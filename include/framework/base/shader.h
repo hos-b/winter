@@ -5,6 +5,12 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 
+
+namespace winter
+{
+namespace base
+{
+
 struct ShaderProgramSource
 {
     std::string vertex_source;
@@ -35,4 +41,6 @@ private:
     mutable std::unordered_map<std::string, int> uniform_cache_;
 };
 
+}// end of base
+}// end of shader
 #endif

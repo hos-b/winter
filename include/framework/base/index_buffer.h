@@ -1,6 +1,10 @@
 #ifndef __INDEX_BUFFER_H__
 #define __INDEX_BUFFER_H__
 
+namespace winter
+{
+namespace base
+{
 
 class IndexBuffer
 {
@@ -17,4 +21,6 @@ private:
     unsigned int count_;
 };
 
+}// end of base
+}// end of winter
 #endif

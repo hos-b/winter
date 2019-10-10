@@ -1,6 +1,6 @@
 #include <fstream>
 #include <streambuf>
-#include "gl_utils.h"
+#include "framework/util/gl_utils.h"
 
 GLFWwindow* BoilerPlate(unsigned int width, unsigned int height)
 {

@@ -1,5 +1,5 @@
-#include "framework/shader.h"
-#include "framework/debug.h"
+#include "framework/base/shader.h"
+#include "framework/util/debug.h"
 
 
 #include <GL/glew.h>
@@ -7,6 +7,11 @@
 #include <sstream>
 #include <fstream>
 
+namespace winter
+{
+namespace base
+{
+    
 Shader::Shader(const std::string& file_path) : file_path_(file_path)
 {
     ShaderProgramSource source = ParseShader();
@@ -127,3 +132,6 @@ void Shader::SetUniform<glm::mat4, 16>(const std::string &name, glm::mat4 arg)
 {
     GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &arg[0][0]));
 }
+
+}// end of base
+}// end of shader

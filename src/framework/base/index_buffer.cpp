@@ -1,7 +1,11 @@
-#include "framework/index_buffer.h"
-#include "framework/debug.h"
+#include "framework/base/index_buffer.h"
+#include "framework/util/debug.h"
 #include <GL/glew.h>
 
+namespace winter
+{
+namespace base
+{
 IndexBuffer::IndexBuffer(const unsigned int* data, unsigned int count) : count_(count)
 {
     GLDebug(glGenBuffers(1, &renderer_id_));
@@ -25,3 +29,6 @@ unsigned int IndexBuffer::count() const
 {
     return count_;
 }
+
+}// end of base
+}// end of winter

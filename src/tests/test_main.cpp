@@ -1,6 +1,6 @@
-#include "framework/renderer.h"
-#include "framework/debug.h"
-#include "gl_utils.h"
+#include "framework/base/renderer.h"
+#include "framework/util/gl_utils.h"
+#include "framework/util/debug.h"
 
 #include <unistd.h>
 #include <glm/glm.hpp>
@@ -12,6 +12,7 @@
 
 #include "tests/clearcolor.h"
 #include "tests/texture.h"
+#include "tests/pyramid.h"
 
 int main(void)
 {
@@ -25,23 +26,22 @@ int main(void)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    Renderer renderer;
-
     // vsync
     glfwSwapInterval(1);
 
     // tests
-    test::Test* current_test = nullptr;
-    test::TestMenu* menu = new test::TestMenu(current_test);
+    winter::test::Test* current_test = nullptr;
+    winter::test::TestMenu* menu = new winter::test::TestMenu(current_test);
     current_test = menu;
 
-    menu->RegisterTest<test::ClearColorTest>("Clear Color");
-    menu->RegisterTest<test::TextureTest>("Texture");
+    menu->RegisterTest<winter::test::ClearColorTest>("Clear Color");
+    menu->RegisterTest<winter::test::TextureTest>("Texture");
+    menu->RegisterTest<winter::test::PyramidTest>("Pyramid");
 
     while (!glfwWindowShouldClose(window))
     {
         GLDebug(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-        renderer.Clear();
+        winter::base::Renderer::Clear(winter::base::Renderer::RenderMode::GL2D);
         
         // start the imgui frame
         ImGui_ImplOpenGL3_NewFrame();

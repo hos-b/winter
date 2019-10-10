@@ -150,8 +150,7 @@ pipeline. we have 5 shaders in opengl but normally only the first two are used.
 #### vertex shader
 the primary purpose of the vertex shader is to define where in the window the vertices are drawn. it gets called once for every vertex that we have. it's not optional and must store something in `gl_Position` as it is used by later stages. it can also specify additional outputs that can be used by later user-defined shaders. input is the vertex data itself.
 #### fragment shader
-the fragment shader is called once per every pixel that get rasterized and determines the color of that pixel. this means the fragment shader
-gets called way more often and has to be optimized. it's optional but very often used. most important output is a `vec4` color for each pixel.s
+the fragment shader is called once per every pixel that get rasterized and determines the color of that pixel. the coordinates of each of these pixels is obtained by interpolating between the given vertices. this leads to a very accurate estimation of where the pixel should be. this means the fragment shader gets called way more often and has to be optimized. it's optional but very often used. most important output is a `vec4` color for each pixel.s
 
 #### rendering pipleline
 * vertex specification

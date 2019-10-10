@@ -1,6 +1,9 @@
 #include "tests/test.h"
 
-namespace test{
+namespace winter
+{
+namespace test
+{
     
 TestMenu::TestMenu(Test*& current_test_pointer) : current_test_(current_test_pointer)
 {
@@ -15,4 +18,5 @@ void TestMenu::OnImGuiRender()
     }
 }
 
-}
+}// end of test
+}// end of winter

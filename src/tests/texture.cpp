@@ -1,9 +1,12 @@
 #include "tests/texture.h"
-#include "framework/renderer.h"
-#include "framework/debug.h"
+#include "framework/base/renderer.h"
+#include "framework/util/debug.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace test{
+namespace winter
+{
+namespace test
+{
 
 TextureTest::~TextureTest()
 {
@@ -30,20 +33,20 @@ TextureTest::TextureTest()
     };
 
     // vertex array
-    va_ = new VertexArray;
+    va_ = new base::VertexArray;
     // vertex buffer
-    vb_ = new VertexBuffer(positions, 4 * 4 *sizeof(float));
+    vb_ = new base::VertexBuffer(positions, 4 * 4 *sizeof(float));
     // layouts
-    VertexBufferLayout layout;
+    base::VertexBufferLayout layout;
     layout.Push<float>(2);
     layout.Push<float>(2);
     va_->AddBuffer(*vb_, layout);
 
     // index buffer
-    ib_ = new IndexBuffer(indices, 6);
+    ib_ = new base::IndexBuffer(indices, 6);
 
     // shaders
-    shader_ = new Shader("../res/shaders/basic_shader.glsl");
+    shader_ = new base::Shader("../res/shaders/basic_shader.glsl");
     shader_->Bind();
 
     // projection, view, model matrces
@@ -53,20 +56,19 @@ TextureTest::TextureTest()
     mvp_ = projection_ * view_ * model_;
     shader_->SetUniform<glm::mat4, 16>("u_model_view_projection", mvp_);
     // textures
-    texture_ = new Texture("../res/textures/fb.png", GL_REPEAT);
+    texture_ = new base::Texture("../res/textures/fb.png", GL_REPEAT);
     texture_->Bind();
     shader_->SetUniform<int, 1>("u_texture", 0);
 }
 void TextureTest::OnRender()
 {
-    Renderer renderer;
     // draw the current bound index buffer of type uint, count 6
     // renderer binds both buffer before the draw call
     shader_->Bind();
     model_ = glm::translate(glm::mat4(1.0f), translation_a_);
     mvp_ = projection_ * view_ * model_;
     shader_->SetUniform<float*, 16>("u_model_view_projection", &mvp_[0][0]);
-    renderer.Draw(*va_, *ib_, *shader_);
+    base::Renderer::Draw(*va_, *ib_, *shader_);
 
     model_ = glm::translate(glm::mat4(1.0f), translation_b_);
     model_ = glm::rotate(model_, rotation_.x ,glm::vec3(1,0,0));
@@ -74,7 +76,7 @@ void TextureTest::OnRender()
     model_ = glm::rotate(model_, rotation_.z ,glm::vec3(0,0,1));
     mvp_ = projection_ * view_ * model_;
     shader_->SetUniform<float*, 16>("u_model_view_projection", &mvp_[0][0]);
-    renderer.Draw(*va_, *ib_, *shader_);
+    base::Renderer::Draw(*va_, *ib_, *shader_);
 
     shader_->SetUniform<float, 1>("float1", 1.0f);
     shader_->SetUniform<float, 4>("float4", 1.0f, 2.0f, 1.1f, 2.2f);
@@ -88,4 +90,5 @@ void TextureTest::OnImGuiRender()
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
 
-}
+}// end of test
+}// end of winter

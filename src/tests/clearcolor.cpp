@@ -1,8 +1,11 @@
+#include "framework/util/debug.h"
 #include "tests/clearcolor.h"
-#include "framework/debug.h"
 #include <GL/glew.h>
 
-namespace test{
+namespace winter
+{
+namespace test
+{
 
 ClearColorTest::ClearColorTest() : color_{0.2f, 0.3f, 0.8f, 1.0f}
 {}
@@ -16,4 +19,5 @@ void ClearColorTest::OnImGuiRender()
     ImGui::ColorEdit4("clear color", color_);
 }
 
-}
+}// end of test
+}// end of winter
