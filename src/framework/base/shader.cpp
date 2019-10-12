@@ -133,5 +133,5 @@ void Shader::SetUniform<glm::mat4, 16>(const std::string &name, glm::mat4 arg)
     GLDebug(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &arg[0][0]));
 }
 
-}// end of base
-}// end of shader
+} // namespace base
+} // namespace shader

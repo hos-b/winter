@@ -4,11 +4,9 @@
 #include <glm/glm.hpp>
 
 #include "test.h"
+#include "framework/mesh/mesh.h"
 #include "framework/base/shader.h"
 #include "framework/base/glf_texture.h"
-#include "framework/base/vertex_array.h"
-#include "framework/base/index_buffer.h"
-#include "framework/base/vertex_buffer.h"
 
 
 namespace winter
@@ -29,12 +27,11 @@ private:
     glm::vec3 rotation_;
 
     base::Shader* shader_;
-    base::IndexBuffer* ib_;
-    base::VertexArray* va_;
-    base::VertexBuffer* vb_;
+    mesh::Mesh* mesh_;
+    ;
 };
 
-}// end of test
-}// end of winter
+} // namespace test
+} // namespace winter
 
 #endif

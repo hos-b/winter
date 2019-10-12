@@ -41,7 +41,7 @@ private:
     std::vector<std::pair<std::string, std::function<Test*()>>> tests;
 };
 
-}// end of test
-}// end of winter
+} // namespace test
+} // namespace winter
  
 #endif

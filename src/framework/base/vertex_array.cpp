@@ -61,5 +61,5 @@ void VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexBuffe
     }
 }
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter

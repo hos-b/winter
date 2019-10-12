@@ -18,6 +18,6 @@ private:
     float color_[4];
 };
 
-}// end of test
-}// end of winter
+} // namespace test
+} // namespace winter
 #endif

@@ -18,5 +18,5 @@ void TestMenu::OnImGuiRender()
     }
 }
 
-}// end of test
-}// end of winter
+} // namespace test
+} // namespace winter

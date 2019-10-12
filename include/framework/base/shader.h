@@ -1,5 +1,5 @@
-#ifndef __GL_SHADER_H__
-#define __GL_SHADER_H__
+#ifndef __WINTER_SHADER_H__
+#define __WINTER_SHADER_H__
 
 #include <string>
 #include <unordered_map>
@@ -41,6 +41,6 @@ private:
     mutable std::unordered_map<std::string, int> uniform_cache_;
 };
 
-}// end of base
-}// end of shader
+} // namespace base
+} // namespace shader
 #endif

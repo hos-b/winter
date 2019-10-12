@@ -7,7 +7,7 @@ namespace winter
 namespace base
 {
 
-VertexBuffer::VertexBuffer(const void* data, unsigned int size)
+VertexBuffer::VertexBuffer(const void* data, unsigned int size) : count_(size)
 {
     GLDebug(glGenBuffers(1, &renderer_id_));
     GLDebug(glBindBuffer(GL_ARRAY_BUFFER, renderer_id_));
@@ -27,5 +27,5 @@ void VertexBuffer::Unbind() const
     GLDebug(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter

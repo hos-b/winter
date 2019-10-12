@@ -1,19 +1,19 @@
-#ifndef __GL_DEBUG__
-#define __GL_DEBUG__
+#ifndef __WINTER_DEBUG__
+#define __WINTER_DEBUG__
 
 #include <string>
 
-#define ASSERT(x) if (!(x)) __builtin_trap()
+#define WINTER_ASSERT(x) if (!(x)) __builtin_trap()
 
 // remove for release
-#define DEBUG_FLAG
+#define DEBUG_FLAG 1
 
 #ifdef DEBUG_FLAG
 #define GLDebug(x) GLClearError();\
     x;\
-    ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+    WINTER_ASSERT(GLLogCall(#x, __FILE__, __LINE__))
 #else
-#define GLDebug(x) x;
+#define GLDebug(x) x
 #endif
 
 

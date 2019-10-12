@@ -19,5 +19,5 @@ void ClearColorTest::OnImGuiRender()
     ImGui::ColorEdit4("clear color", color_);
 }
 
-}// end of test
-}// end of winter
+} // namespace test
+} // namespace winter

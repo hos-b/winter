@@ -1,5 +1,5 @@
-#ifndef __VERTEX_BUFFER_H__
-#define __VERTEX_BUFFER_H__
+#ifndef __WINTER_VERTEX_BUFFER_H__
+#define __WINTER_VERTEX_BUFFER_H__
 
 
 namespace winter
@@ -15,10 +15,12 @@ public:
 
     void Bind() const;
     void Unbind() const;
+    inline unsigned int count() const {return count_;}
 private:
     unsigned int renderer_id_;
+    unsigned int count_;
 };
 
-}// end of base
-}// end of shader
+} // namespace base
+} // namespace shader
 #endif

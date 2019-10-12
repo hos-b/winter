@@ -1,6 +1,7 @@
 #include "tests/pyramid.h"
 #include "framework/base/renderer.h"
 #include "framework/util/debug.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,9 +13,7 @@ namespace test
 PyramidTest::~PyramidTest()
 {
     glDisable(GL_DEPTH_TEST);
-    delete va_;
-    delete ib_;
-    delete vb_;
+    delete mesh_;
 }
 PyramidTest::PyramidTest()
 {
@@ -35,20 +34,13 @@ PyramidTest::PyramidTest()
         0, 1, 2
     };
 
-    // vertex array
-    va_ = new base::VertexArray;
-    // vertex buffer
-    vb_ = new base::VertexBuffer(positions, 4 * 3 *sizeof(float));
-    // layouts
-    base::VertexBufferLayout layout;
-    layout.Push<float>(3);
-    va_->AddBuffer(*vb_, layout);
-
-    // index buffer
-    ib_ = new base::IndexBuffer(indices, 12);
+    mesh_ = new mesh::Mesh("pyramid");
+    mesh_->AddVertexBufferElement<float>(3);
+    mesh_->CreateMesh(positions, 4 * 3 * sizeof(float), indices, 12);
 
     // shaders
     shader_ = new base::Shader("../res/shaders/basic_shader_notex.glsl");
+    mesh_->AssignShader(shader_);
     shader_->Bind();
 
     // projection, view, model matrces
@@ -73,7 +65,7 @@ void PyramidTest::OnRender()
     model_ = glm::rotate(model_, rotation_.z ,glm::vec3(0,0,1));
     mvp_ = projection_ * view_ * model_;
     shader_->SetUniform<float*, 16>("u_model_view_projection", &mvp_[0][0]);
-    base::Renderer::Draw(*va_, *ib_, *shader_);
+    mesh_->OnRender();
     rotation_.y += 0.01f;
     if (rotation_.y > 2*glm::pi<float>())
         rotation_.y-=2*glm::pi<float>();
@@ -85,5 +77,5 @@ void PyramidTest::OnImGuiRender()
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 }
 
-}// end of test
-}// end of winter
+} // namespace test
+} // namespace winter

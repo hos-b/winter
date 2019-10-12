@@ -23,7 +23,8 @@ include_directories(include
 set(SRC_FILES src/tests/test_main.cpp
             # src/main.cpp 
               src/framework/util/debug.cpp 
-              src/framework/util/gl_utils.cpp 
+              src/framework/util/window.cpp 
+              src/framework/mesh/mesh.cpp
               src/framework/base/shader.cpp
               src/framework/base/renderer.cpp 
               src/framework/base/glf_texture.cpp

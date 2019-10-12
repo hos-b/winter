@@ -1,5 +1,5 @@
-#ifndef __VERTEX_ARRAY__
-#define __VERTEX_ARRAY__
+#ifndef __WINTER_VERTEX_ARRAY__
+#define __WINTER_VERTEX_ARRAY__
 #include "framework/base/vertex_buffer.h"
 #include <vector>
 #include <GL/glew.h>
@@ -23,7 +23,7 @@ struct VertexBufferElement
         case GL_UNSIGNED_INT:   return 4;
         case GL_UNSIGNED_BYTE:  return 1;
         }
-        throw "unsupported type";
+        throw "unsupported buffer element type";
         return 0;
     }
 }; 
@@ -59,6 +59,6 @@ private:
     unsigned int renderer_id_;
 };
 
-}// end of base
-}// end of shader
+} // namespace base
+} // namespace shader
 #endif

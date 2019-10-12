@@ -32,6 +32,11 @@ void Renderer::Draw(const VertexArray& vertex_array, const IndexBuffer& index_bu
     GLDebug(glDrawElements(GL_TRIANGLES, index_buffer.count(), GL_UNSIGNED_INT, nullptr));
 }
 
+void Renderer::Draw(Renderable& object)
+{
+    object.OnRender();
+}
+
 void Renderer::Clear(RenderMode mode)
 {
     if (mode == RenderMode::GL2D)
@@ -44,5 +49,5 @@ void Renderer::Clear(RenderMode mode)
     }
 }
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter

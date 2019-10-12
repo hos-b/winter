@@ -1,5 +1,5 @@
 #include "framework/base/renderer.h"
-#include "framework/util/gl_utils.h"
+#include "framework/util/window.h"
 #include "framework/util/debug.h"
 
 #include <unistd.h>
@@ -16,14 +16,14 @@
 
 int main(void)
 {
-    GLFWwindow* window =  BoilerPlate(640, 480);
+    winter::util::Window display(800, 600, "unit tests");
     
     //imgui
     const char* glsl_version = "#version 330";
     ImGui::CreateContext();
     ImGuiIO io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(display.window() , true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // vsync
@@ -38,7 +38,7 @@ int main(void)
     menu->RegisterTest<winter::test::TextureTest>("Texture");
     menu->RegisterTest<winter::test::PyramidTest>("Pyramid");
 
-    while (!glfwWindowShouldClose(window))
+    while (display.is_ok())
     {
         GLDebug(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         winter::base::Renderer::Clear(winter::base::Renderer::RenderMode::GL2D);
@@ -65,8 +65,9 @@ int main(void)
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        GLDebug(glfwSwapBuffers(window));
-        GLDebug(glfwPollEvents());
+        display.SwapBuffers();
+        display.PollEvents();
+        GLDebug();
     }
     
     // test clean up
@@ -79,6 +80,5 @@ int main(void)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext(NULL);
 
-    glfwTerminate();
     return 0;
 }

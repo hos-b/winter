@@ -42,5 +42,5 @@ void Texture::Unbind() const
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter

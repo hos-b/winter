@@ -1,6 +1,7 @@
-#ifndef __RENDERER_H__
-#define __RENDERER_H__
+#ifndef __WINTER_RENDERER_H__
+#define __WINTER_RENDERER_H__
 
+#include "framework/base/abstract_types.h"
 #include "framework/base/index_buffer.h"
 #include "framework/base/vertex_array.h"
 #include "framework/base/shader.h"
@@ -20,12 +21,13 @@ public:
 
     // static functions
     static void Draw(const VertexArray& vertex_array, const IndexBuffer& index_buffer, const Shader& shader);
+    static void Draw(Renderable& object);
     static void Clear(RenderMode mode);
 private:
     RenderMode render_mode_;
 
 };
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter
 #endif

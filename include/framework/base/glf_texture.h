@@ -1,5 +1,5 @@
-#ifndef __GL_TEXTURE_H__
-#define __GL_TEXTURE_H__
+#ifndef __WINTER_TEXTURE_H__
+#define __WINTER_TEXTURE_H__
 
 #include <string>
 
@@ -27,6 +27,6 @@ private:
     int width_, height_, bits_per_pixel_;
 };
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter
 #endif

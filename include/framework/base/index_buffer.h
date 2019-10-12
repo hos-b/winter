@@ -1,5 +1,5 @@
-#ifndef __INDEX_BUFFER_H__
-#define __INDEX_BUFFER_H__
+#ifndef __WINTER_INDEX_BUFFER_H__
+#define __WINTER_INDEX_BUFFER_H__
 
 namespace winter
 {
@@ -14,13 +14,13 @@ public:
 
     void Bind() const;
     void Unbind() const;
-    unsigned int count() const;
+    inline unsigned int count() const {return count_;}
     
 private:
     unsigned int renderer_id_;
     unsigned int count_;
 };
 
-}// end of base
-}// end of winter
+} // namespace base
+} // namespace winter
 #endif
