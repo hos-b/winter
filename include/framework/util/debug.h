@@ -6,7 +6,7 @@
 #define WINTER_ASSERT(x) if (!(x)) __builtin_trap()
 
 // remove for release
-#define DEBUG_FLAG 1
+// #define DEBUG_FLAG 1
 
 #ifdef DEBUG_FLAG
 #define GLDebug(x) GLClearError();\

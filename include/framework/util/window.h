@@ -1,13 +1,16 @@
-#ifndef __WINTER_WINDOW_H__
-#define __WINTER_WINDOW_H__
+#ifndef __WINTER_glfw_WINDOW_H__
+#define __WINTER_glfw_WINDOW_H__
 
 #include "framework/util/debug.h"
+#include "framework/base/abstract_types.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
+#include <vector>
 
 namespace winter
 {
@@ -17,25 +20,40 @@ namespace util
 class Window
 {
 public:
-    Window(unsigned int width, unsigned int height, const std::string& name) : width_(width), height_(height), window_(nullptr), name_(name)
-    { Initialize(); }
-    Window() : width_(800), height_(600), window_(nullptr), name_("glFramework") { Initialize(); }
-    ~Window() { glfwTerminate(); }
+    Window(unsigned int width, unsigned int height, const std::string& name);
+    Window();
+    ~Window();
 
-    inline GLFWwindow* window() { return window_; }
-    inline unsigned int buffer_width() { return buffer_width_; }
-    inline unsigned int buffer_height() { return buffer_height_; }
-    inline bool is_ok() { return !glfwWindowShouldClose(window_); }
-    inline void SwapBuffers() { glfwSwapBuffers(window_); }
-    inline void PollEvents() { glfwPollEvents(); }
-    inline float aspect_ratio() { return (float)buffer_width_/(float)buffer_height_; }
+    GLFWwindow* glfw_window() { return glfw_window_; }
+    unsigned int buffer_width() { return buffer_width_; }
+    unsigned int buffer_height() { return buffer_height_; }
+    bool is_ok() { return !glfwWindowShouldClose(glfw_window_); }
+    float aspect_ratio() { return (float)buffer_width_/(float)buffer_height_; }
+    void SwapBuffers() { glfwSwapBuffers(glfw_window_); }
+    void PollEvents() { glfwPollEvents(); }
+    void RegsiterInputSubscriber(base::InputSubscriber* subscriber, const std::string& name);
+    void RemoveInputSubscriber(const std::string& name);
 
 private:
-    void Initialize();
+    void InitializeGLFW();
+    void SetupCallbacks();
+    void KeyboardCallback(int key, int code , int action, int mods);
+    void MouseMoveCallback(double x, double y);
+    void MouseKeyCallback(int button, int action, int mods);
+
     unsigned int width_, height_;
+    GLFWwindow *glfw_window_;
     std::string name_;
-    GLFWwindow *window_;
     int buffer_width_, buffer_height_;
+    // keyboard input
+    bool keys_[1024];
+    // mouse input
+    double last_x_, last_y_;
+    double delta_x_, delta_y_;
+    bool register_mouse_events_;
+    bool hide_cursor_;
+    // subscriber
+    std::vector<std::pair<base::InputSubscriber*, std::string>> subscribers_;
 };
 
 } // namespace util

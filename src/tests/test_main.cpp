@@ -16,14 +16,14 @@
 
 int main(void)
 {
-    winter::util::Window display(800, 600, "unit tests");
+    winter::util::Window window(800, 600, "unit tests");
     
     //imgui
     const char* glsl_version = "#version 330";
     ImGui::CreateContext();
     ImGuiIO io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(display.window() , true);
+    ImGui_ImplGlfw_InitForOpenGL(window.glfw_window() , true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // vsync
@@ -32,13 +32,13 @@ int main(void)
     // tests
     winter::test::Test* current_test = nullptr;
     winter::test::TestMenu* menu = new winter::test::TestMenu(current_test);
+    menu->SetWindowReference(&window);
     current_test = menu;
 
     menu->RegisterTest<winter::test::ClearColorTest>("Clear Color");
     menu->RegisterTest<winter::test::TextureTest>("Texture");
     menu->RegisterTest<winter::test::PyramidTest>("Pyramid");
-
-    while (display.is_ok())
+    while (window.is_ok())
     {
         GLDebug(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         winter::base::Renderer::Clear(winter::base::Renderer::RenderMode::GL2D);
@@ -65,9 +65,8 @@ int main(void)
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        display.SwapBuffers();
-        display.PollEvents();
-        GLDebug();
+        window.SwapBuffers();
+        window.PollEvents();
     }
     
     // test clean up

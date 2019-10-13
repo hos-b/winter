@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include <imgui/imgui.h>
+#include "framework/util/window.h"
 
 namespace winter
 {
@@ -14,14 +15,19 @@ namespace test
 
 class Test
 {
-    public:
-        Test() {};
-        virtual ~Test() {};
+public:
+    Test() {};
+    virtual ~Test() {};
 
-        virtual void OnUpdate(float delta_time) {delta_time += 1;}
-        virtual void OnRender() {}
-        virtual void OnImGuiRender() {}
-    private:
+    virtual void OnUpdate(float delta_time) {delta_time += 1;}
+    virtual void OnRender() {}
+    virtual void OnImGuiRender() {}
+    // window management
+    virtual void SetWindowReference(util::Window *window) { window_ = window; }
+    util::Window* window() { return window_; }
+private:
+    // window reference
+    util::Window *window_ = nullptr;
 };
 class TestMenu : public Test
 {

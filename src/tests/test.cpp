@@ -14,7 +14,11 @@ void TestMenu::OnImGuiRender()
     for( auto& test : tests) 
     {
         if(ImGui::Button(test.first.c_str()))
+        {
             current_test_ = test.second();
+            current_test_->SetWindowReference(window());
+        }
+
     }
 }
 

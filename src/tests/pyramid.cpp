@@ -1,5 +1,6 @@
 #include "tests/pyramid.h"
 #include "framework/base/renderer.h"
+#include "framework/util/camera.h"
 #include "framework/util/debug.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,6 +14,7 @@ namespace test
 PyramidTest::~PyramidTest()
 {
     glDisable(GL_DEPTH_TEST);
+    window()->RemoveInputSubscriber("pyramid");
     delete mesh_;
 }
 PyramidTest::PyramidTest()
@@ -43,7 +45,9 @@ PyramidTest::PyramidTest()
     mesh_->AssignShader(shader_);
     shader_->Bind();
 
-    // projection, view, model matrces
+    // camera
+    camera_ = new util::Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 0.0f, 5.0f, 5.0f);
+    // projection, view, model matrices
     // projection_ = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -400.0f, 400.0f);
     projection_ = glm::perspective(45.0f, 640.0f/480.0f, 0.1f, 500.0f);
     view_ =  glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -300.0f));
@@ -54,6 +58,11 @@ PyramidTest::PyramidTest()
     // enable depth buffer
     glEnable(GL_DEPTH_TEST);
 }
+void PyramidTest::SetWindowReference(util::Window* window)
+{
+    Test::SetWindowReference(window);
+    window->RegsiterInputSubscriber(camera_, "pyramid");
+}
 void PyramidTest::OnRender()
 {
     base::Renderer::Clear(base::Renderer::RenderMode::GL3D);
@@ -63,7 +72,7 @@ void PyramidTest::OnRender()
     model_ = glm::rotate(model_, rotation_.x ,glm::vec3(1,0,0));
     model_ = glm::rotate(model_, rotation_.y ,glm::vec3(0,1,0));
     model_ = glm::rotate(model_, rotation_.z ,glm::vec3(0,0,1));
-    mvp_ = projection_ * view_ * model_;
+    mvp_ = projection_ * camera_->view_matrix() * model_;
     shader_->SetUniform<float*, 16>("u_model_view_projection", &mvp_[0][0]);
     mesh_->OnRender();
     rotation_.y += 0.01f;
