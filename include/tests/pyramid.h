@@ -28,7 +28,8 @@ private:
     glm::vec3 rotation_;
 
     base::Shader* shader_;
-    util::Camera* camera_;
+    base::Texture *texture_;
+    util::Camera *camera_;
     mesh::Mesh* mesh_;
     ;
 };

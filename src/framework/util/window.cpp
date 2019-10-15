@@ -10,6 +10,7 @@ Window::Window(unsigned int width, unsigned int height, const std::string& name)
 {
     InitializeGLFW();
     SetupCallbacks();
+    current_tick_ = last_tick_ = std::chrono::steady_clock::now();
 }
 Window::Window() : width_(800), height_(600), glfw_window_(nullptr), name_("glFramework") 
 {
@@ -46,10 +47,11 @@ void Window::InitializeGLFW()
         std::cout << glewGetErrorString(init_enum) << std::endl;
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 }
+// handling input subscribers ----------------------------------------------------------------------------------
 void Window::RegsiterInputSubscriber(base::InputSubscriber* subscriber, const std::string& name)
 { 
     subscribers_.emplace_back(std::make_pair(subscriber, name));
-    std::cout<< "added " << name << " to subscrbers (" << subscribers_.size() << ")" << std::endl;
+    std::cout<< "added " << name << " to input subscrbers (" << subscribers_.size() << ")" << std::endl;
 }
 void Window::RemoveInputSubscriber(const std::string& name)
 {
@@ -58,12 +60,12 @@ void Window::RemoveInputSubscriber(const std::string& name)
         if(it_->second == name)
         {
             subscribers_.erase(it_);
-            std::cout<< "removed " << name << " from subscrbers (" << subscribers_.size() << ")" << std::endl;
+            std::cout<< "removed " << name << " from input subscrbers (" << subscribers_.size() << ")" << std::endl;
             break;
         }
     }
 }
-
+// input callbacks ---------------------------------------------------------------------------------------------
 void Window::SetupCallbacks()
 {
     glfwSetWindowUserPointer(glfw_window_, this);
@@ -109,7 +111,7 @@ void Window::KeyboardCallback(int key, int code , int action, int mods)
     }
     for (auto& sub : subscribers_)
     {
-        sub.first->OnKeyboardEvent(key, code, action, mods);
+        sub.first->OnKeyboardEvent(key, code, action, mods, delta_time());
     }
 }
 void Window::MouseMoveCallback(double x, double y)
@@ -129,7 +131,7 @@ void Window::MouseMoveCallback(double x, double y)
     last_y_ = y;
     for (auto& sub : subscribers_)
     {
-        sub.first->OnMouseMoveEvent(delta_x_, delta_y_);
+        sub.first->OnMouseMoveEvent(delta_x_, delta_y_, delta_time());
     }
 }
 
@@ -137,8 +139,17 @@ void Window::MouseKeyCallback(int button, int action, int mods)
 {
     for (auto& sub : subscribers_)
     {
-        sub.first->OnMouseKeyEvent(button, action, mods);
+        sub.first->OnMouseKeyEvent(button, action, mods, delta_time());
     }
+}
+
+// delta time ---------------------------------------------------------------------------------------------
+void Window::PollEvents()
+{
+    current_tick_ = std::chrono::steady_clock::now();
+    delta_time_ = current_tick_ - last_tick_;
+    last_tick_ = current_tick_;
+    glfwPollEvents();
 }
 
 } // namespace util

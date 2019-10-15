@@ -20,8 +20,8 @@ Texture::Texture(const std::string& file_path, unsigned int gl_mode) : file_path
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gl_mode));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gl_mode));
-
     GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, local_buffer_));
+    GLDebug(glGenerateMipmap(GL_TEXTURE_2D));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 
     if(local_buffer_)
@@ -30,6 +30,8 @@ Texture::Texture(const std::string& file_path, unsigned int gl_mode) : file_path
 Texture::~Texture()
 {
     GLDebug(glDeleteTextures(1, &renderer_id_));
+    renderer_id_ = 0;
+    file_path_ = "";
 }
 
 void Texture::Bind(unsigned int slot) const

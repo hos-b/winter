@@ -8,9 +8,9 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <cstdio>
 #include <string>
 #include <vector>
+#include <chrono>
 
 namespace winter
 {
@@ -30,9 +30,10 @@ public:
     bool is_ok() { return !glfwWindowShouldClose(glfw_window_); }
     float aspect_ratio() { return (float)buffer_width_/(float)buffer_height_; }
     void SwapBuffers() { glfwSwapBuffers(glfw_window_); }
-    void PollEvents() { glfwPollEvents(); }
+    void PollEvents();
     void RegsiterInputSubscriber(base::InputSubscriber* subscriber, const std::string& name);
     void RemoveInputSubscriber(const std::string& name);
+    double delta_time() { return delta_time_.count(); }
 
 private:
     void InitializeGLFW();
@@ -41,6 +42,7 @@ private:
     void MouseMoveCallback(double x, double y);
     void MouseKeyCallback(int button, int action, int mods);
 
+    // window variables
     unsigned int width_, height_;
     GLFWwindow *glfw_window_;
     std::string name_;
@@ -52,8 +54,12 @@ private:
     double delta_x_, delta_y_;
     bool register_mouse_events_;
     bool hide_cursor_;
-    // subscriber
+    // input subscribers
     std::vector<std::pair<base::InputSubscriber*, std::string>> subscribers_;
+    // delta time
+    std::chrono::_V2::steady_clock::time_point current_tick_, last_tick_;
+    std::chrono::duration<double> delta_time_;
+    
 };
 
 } // namespace util

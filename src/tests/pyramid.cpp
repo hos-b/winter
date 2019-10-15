@@ -2,6 +2,7 @@
 #include "framework/base/renderer.h"
 #include "framework/util/camera.h"
 #include "framework/util/debug.h"
+#include "framework/base/glf_texture.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -22,12 +23,12 @@ PyramidTest::PyramidTest()
     // blending options
     GLDebug(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     GLDebug(glEnable(GL_BLEND));
-
+    
     float positions[] = {
-       -100.0f  , -100.0f   , 0.0f  ,  // 0
-        0.0f    ,  0.0f     , 100.0f,  // 1
-        100.0f  , -100.0f   , 0.0f  ,  // 2
-        0.000f  ,  100.0f   , 0.0f     // 3
+       -100.0f  , -100.0f   , 0.0f  ,   0.0f, 0.0f, // 0
+        0.0f    ,  0.0f     , 100.0f,   0.5f, 0.0f, // 1
+        100.0f  , -100.0f   , 0.0f  ,   1.0f, 0.0f, // 2
+        0.0f    ,  100.0f   , 0.0f  ,   0.5f, 1.0f  // 3
     };
     unsigned int indices[] = {
         0, 3, 1,
@@ -36,17 +37,26 @@ PyramidTest::PyramidTest()
         0, 1, 2
     };
 
+    // mesh
     mesh_ = new mesh::Mesh("pyramid");
     mesh_->AddVertexBufferElement<float>(3);
-    mesh_->CreateMesh(positions, 4 * 3 * sizeof(float), indices, 12);
+    mesh_->AddVertexBufferElement<float>(2);
+    mesh_->CreateMesh(positions, 4 * 5 * sizeof(float), indices, 12);
 
     // shaders
-    shader_ = new base::Shader("../res/shaders/basic_shader_notex.glsl");
+    shader_ = new base::Shader("../res/shaders/basic_shader.glsl");
     mesh_->AssignShader(shader_);
     shader_->Bind();
 
+    // texture
+    texture_ = new base::Texture("../res/textures/opengl.png", GL_REPEAT);
+    texture_->Bind(0);
+    shader_->SetUniform<int, 1>("u_texture", 0);
+
     // camera
-    camera_ = new util::Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 0.0f, 5.0f, 5.0f);
+    camera_ = new util::Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 0.0f);
+    camera_->SetSensitivity(200.0f, 20.0f);
+
     // projection, view, model matrices
     // projection_ = glm::ortho(0.0f, 640.0f, 0.0f, 480.0f, -400.0f, 400.0f);
     projection_ = glm::perspective(45.0f, 640.0f/480.0f, 0.1f, 500.0f);
@@ -77,7 +87,9 @@ void PyramidTest::OnRender()
     mesh_->OnRender();
     rotation_.y += 0.01f;
     if (rotation_.y > 2*glm::pi<float>())
-        rotation_.y-=2*glm::pi<float>();
+        rotation_.y -= 2*glm::pi<float>();
+     if (rotation_.y <= 0)
+        rotation_.y = 0;
 }
 void PyramidTest::OnImGuiRender()
 {

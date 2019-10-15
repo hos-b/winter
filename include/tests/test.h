@@ -19,7 +19,7 @@ public:
     Test() {};
     virtual ~Test() {};
 
-    virtual void OnUpdate(float delta_time) {delta_time += 1;}
+    virtual void OnUpdate(float delta_time) {(void)delta_time;}
     virtual void OnRender() {}
     virtual void OnImGuiRender() {}
     // window management

@@ -46,6 +46,9 @@ set(SRC_FILES src/tests/test_main.cpp
               outsource/imgui/imgui_impl_glfw.cpp
               outsource/imgui/imgui_impl_opengl3.cpp
 )
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY /home/hosein/Desktop/bin)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}
