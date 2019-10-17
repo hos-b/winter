@@ -43,10 +43,10 @@ set(SRC_FILES src/tests/test_main.cpp
               outsource/imgui/imgui.cpp
               outsource/imgui/imgui_demo.cpp
               outsource/imgui/imgui_draw.cpp
-              outsource/stb_image/stb_image.cpp
               outsource/imgui/imgui_widgets.cpp
               outsource/imgui/imgui_impl_glfw.cpp
               outsource/imgui/imgui_impl_opengl3.cpp
+              outsource/stb_image/stb_image.cpp
 )
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
