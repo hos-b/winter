@@ -1,5 +1,5 @@
 #include "framework/base/index_buffer.h"
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 #include <GL/glew.h>
 
 namespace winter

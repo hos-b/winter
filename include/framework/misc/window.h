@@ -1,7 +1,7 @@
 #ifndef __WINTER_glfw_WINDOW_H__
 #define __WINTER_glfw_WINDOW_H__
 
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 #include "framework/base/abstract_types.h"
 
 #include <GL/glew.h>

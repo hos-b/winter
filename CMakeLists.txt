@@ -22,9 +22,10 @@ include_directories(include
 
 set(SRC_FILES src/tests/test_main.cpp
             # src/main.cpp 
-              src/framework/util/debug.cpp 
-              src/framework/util/camera.cpp 
-              src/framework/util/window.cpp 
+              src/framework/misc/debug.cpp 
+              src/framework/misc/light.cpp 
+              src/framework/misc/camera.cpp 
+              src/framework/misc/window.cpp 
               src/framework/mesh/mesh.cpp
               src/framework/base/shader.cpp
               src/framework/base/renderer.cpp 
@@ -36,6 +37,7 @@ set(SRC_FILES src/tests/test_main.cpp
               src/tests/test.cpp
               src/tests/texture.cpp
               src/tests/pyramid.cpp
+              src/tests/lighting.cpp
               src/tests/clearcolor.cpp
               # libraries
               outsource/imgui/imgui.cpp

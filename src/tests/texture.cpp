@@ -1,6 +1,6 @@
 #include "tests/texture.h"
 #include "framework/base/renderer.h"
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace winter
@@ -8,15 +8,13 @@ namespace winter
 namespace test
 {
 
-TextureTest::~TextureTest()
-{
+TextureTest::~TextureTest(){
     delete va_;
     delete ib_;
     delete vb_;
     delete texture_;
 }
-TextureTest::TextureTest()
-{
+TextureTest::TextureTest(){
     // blending options
     GLDebug(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     GLDebug(glEnable(GL_BLEND));
@@ -60,8 +58,7 @@ TextureTest::TextureTest()
     texture_->Bind();
     shader_->SetUniform<int, 1>("u_texture", 0);
 }
-void TextureTest::OnRender()
-{
+void TextureTest::OnRender(){
     // draw the current bound index buffer of type uint, count 6
     // renderer binds both buffer before the draw call
     shader_->Bind();
@@ -82,8 +79,7 @@ void TextureTest::OnRender()
     shader_->SetUniform<float, 4>("float4", 1.0f, 2.0f, 1.1f, 2.2f);
     shader_->SetUniform<int, 1>("int1", 1);
 }
-void TextureTest::OnImGuiRender()
-{
+void TextureTest::OnImGuiRender(){
     ImGui::SliderFloat3("Translation A", &translation_a_.x, 0.0f, 640.0f);
     ImGui::SliderFloat3("Translation B", &translation_b_.x, 0.0f, 640.0f);
     ImGui::SliderFloat3("Rotation B", &rotation_.x, 0.0f, 2*glm::pi<float>());

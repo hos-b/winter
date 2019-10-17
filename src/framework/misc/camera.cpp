@@ -1,4 +1,4 @@
-#include "framework/util/camera.h"
+#include "framework/misc/camera.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 
@@ -59,8 +59,8 @@ void Camera::OnKeyboardEvent(int key, int code , int action, int mods, float del
 {
     (void)code;
     (void)mods;
-    if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
-    {
+	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
+	{
         position_ += direction_vector_ * translation_sensitivity_ * delta_time;
     }
     else if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))

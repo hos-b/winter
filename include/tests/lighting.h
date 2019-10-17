@@ -1,5 +1,5 @@
-#ifndef __PYRAMID_TEST_H__
-#define __PYRAMID_TEST_H__
+#ifndef __LIGHTING_TEST_H__
+#define __LIGHTING_TEST_H__
 
 #include <glm/glm.hpp>
 
@@ -8,28 +8,30 @@
 #include "framework/base/shader.h"
 #include "framework/base/glf_texture.h"
 #include "framework/misc/camera.h"
+#include "framework/misc/light.h"
 
 namespace winter
 {
 namespace test
 {
     
-class PyramidTest : public Test
+class LightTest : public Test
 {
 public:
-    PyramidTest();
-    ~PyramidTest();
+    LightTest();
+    ~LightTest();
     void OnRender();
     void OnImGuiRender();
     void SetWindowReference(util::Window* window) override;
 private:
-    glm::mat4 model_, view_, projection_, mvp_;
+    glm::mat4 model_, view_, projection_;
     glm::vec3 translation_;
     glm::vec3 rotation_;
 
     base::Shader* shader_;
     base::Texture *texture_;
     util::Camera *camera_;
+    util::Light *directional_light_;
     mesh::Mesh *mesh_;
 };
 

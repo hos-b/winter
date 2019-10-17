@@ -4,8 +4,8 @@
 #include "framework/base/glf_texture.h"
 #include "framework/base/renderer.h"
 #include "framework/base/shader.h"
-#include "framework/util/window.h"
-#include "framework/util/debug.h"
+#include "framework/misc/window.h"
+#include "framework/misc/debug.h"
 
 #include <unistd.h>
 #include <glm/glm.hpp>

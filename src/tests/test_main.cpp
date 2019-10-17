@@ -1,6 +1,6 @@
 #include "framework/base/renderer.h"
-#include "framework/util/window.h"
-#include "framework/util/debug.h"
+#include "framework/misc/window.h"
+#include "framework/misc/debug.h"
 
 #include <unistd.h>
 #include <glm/glm.hpp>
@@ -13,6 +13,7 @@
 #include "tests/clearcolor.h"
 #include "tests/texture.h"
 #include "tests/pyramid.h"
+#include "tests/lighting.h"
 
 int main(void)
 {
@@ -38,6 +39,7 @@ int main(void)
     menu->RegisterTest<winter::test::ClearColorTest>("Clear Color");
     menu->RegisterTest<winter::test::TextureTest>("Texture");
     menu->RegisterTest<winter::test::PyramidTest>("Pyramid");
+	menu->RegisterTest<winter::test::LightTest>("Lighting");
     while (window.is_ok())
     {
         GLDebug(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));

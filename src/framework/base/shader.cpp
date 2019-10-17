@@ -1,5 +1,5 @@
 #include "framework/base/shader.h"
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 
 
 #include <GL/glew.h>
@@ -105,17 +105,20 @@ int Shader::GetUniformLocation(const std::string& name) const
     uniform_cache_[name] = location;
     return location;
 }
-
+template<>
+void Shader::SetUniform<int, 1>(const std::string &name, int arg)
+{
+    GLDebug(glUniform1i(GetUniformLocation(name), arg));
+}
 template<>
 void Shader::SetUniform<float, 1>(const std::string& name, float arg)
 {
     GLDebug(glUniform1f(GetUniformLocation(name), arg));
 }
-
 template<>
-void Shader::SetUniform<int, 1>(const std::string &name, int arg)
+void Shader::SetUniform<float, 3>(const std::string &name, float arg0, float arg1, float arg2)
 {
-    GLDebug(glUniform1i(GetUniformLocation(name), arg));
+    GLDebug(glUniform3f(GetUniformLocation(name), arg0, arg1, arg2));
 }
 template<>
 void Shader::SetUniform<float, 4>(const std::string &name, float arg0, float arg1, float arg2, float arg3)

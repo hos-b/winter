@@ -1,4 +1,4 @@
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 #include "tests/clearcolor.h"
 #include <GL/glew.h>
 

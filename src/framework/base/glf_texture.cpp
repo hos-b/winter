@@ -1,5 +1,5 @@
 #include "framework/base/glf_texture.h"
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 #include <GL/glew.h>
 #include <stb_image/stb_image.h>
 

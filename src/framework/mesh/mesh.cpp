@@ -1,5 +1,5 @@
 #include "framework/mesh/mesh.h"
-#include "framework/util/debug.h"
+#include "framework/misc/debug.h"
 #include <cmath>
 #include <iostream>
 
