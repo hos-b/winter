@@ -1,5 +1,5 @@
 #include "tests/lighting.h"
-#include "framework/base/glf_texture.h"
+#include "framework/base/texture.h"
 #include "framework/base/renderer.h"
 #include "framework/misc/helper.h"
 #include "framework/misc/camera.h"
@@ -49,7 +49,7 @@ LightTest::LightTest()
 	mesh_->AddVertexBufferElement<float>(3);
     mesh_->CreateMesh(positions, 4 * 8 * sizeof(float), indices, 12);
 
-    // shaders
+	// shaders
     shader_ = new base::Shader("../res/shaders/basic_shader_lighting.glsl");
     mesh_->AssignShader(shader_);
     shader_->Bind();
@@ -63,8 +63,12 @@ LightTest::LightTest()
     directional_light_ = new util::Light("directional_light", glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 
 															  glm::vec3(2.0f, -1.0f, -2.0f), 0.5f);
     directional_light_->UpdateUniforms(shader_);
+	
+	// material
+	material_ = new mesh::Material("material", 0.3f, 4.0f);
+	material_->UpdateUnifrorms(shader_);
 
-    // camera
+	// camera
     camera_ = new util::Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f, 0.0f, 0.0f);
     camera_->SetSensitivity(200.0f, 20.0f);
 
@@ -97,13 +101,14 @@ void LightTest::OnRender()
     shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
     shader_->SetUniform<float*, 16>("u_view", &camera_->view_matrix()[0][0]);
     shader_->SetUniform<float*, 16>("u_projection", &projection_[0][0]);
+	shader_->SetUniform<glm::vec3, 3>("u_camera", camera_->position());
 
-    mesh_->OnRender();
-    rotation_.y += 0.01f;
-    if (rotation_.y > 2*glm::pi<float>())
-        rotation_.y -= 2*glm::pi<float>();
-     if (rotation_.y <= 0)
-        rotation_.y = 0;
+	mesh_->OnRender();
+    // rotation_.y += 0.01f;
+    // if (rotation_.y > 2*glm::pi<float>())
+    //     rotation_.y -= 2*glm::pi<float>();
+    //  if (rotation_.y <= 0)
+    //     rotation_.y = 0;
 }
 void LightTest::OnImGuiRender()
 {

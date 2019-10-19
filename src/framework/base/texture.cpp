@@ -1,7 +1,9 @@
-#include "framework/base/glf_texture.h"
+#include "framework/base/texture.h"
 #include "framework/misc/debug.h"
-#include <GL/glew.h>
+
 #include <stb_image/stb_image.h>
+#include <future>
+#include <GL/glew.h>
 
 namespace winter
 {
@@ -14,14 +16,16 @@ Texture::Texture(const std::string& file_path, unsigned int gl_mode) : file_path
     GLDebug(glBindTexture(GL_TEXTURE_2D, renderer_id_));
 
     stbi_set_flip_vertically_on_load(1);
-    local_buffer_ = stbi_load(file_path_.c_str(), &width_, &height_, &bits_per_pixel_, 4);
+	std::future<unsigned char*> img_future = std::async(std::launch::async, stbi_load, file_path_.c_str(), &width_, &height_, &bits_per_pixel_, 4);
+	local_buffer_ = stbi_load(file_path_.c_str(), &width_, &height_, &bits_per_pixel_, 4);
 
-    GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, gl_mode));
     GLDebug(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, gl_mode));
-    GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, local_buffer_));
-    GLDebug(glGenerateMipmap(GL_TEXTURE_2D));
+	local_buffer_ = img_future.get();
+	GLDebug(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, local_buffer_));
+	GLDebug(glGenerateMipmap(GL_TEXTURE_2D));
     GLDebug(glBindTexture(GL_TEXTURE_2D, 0));
 
     if(local_buffer_)

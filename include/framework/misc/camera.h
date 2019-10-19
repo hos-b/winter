@@ -26,6 +26,7 @@ public:
     glm::mat4 view_matrix();
 
     bool mouse_enabled() { return mouse_enabled_; }
+	glm::vec3 position() { return position_; }
 
 private:
     void RefreshCoordinates();

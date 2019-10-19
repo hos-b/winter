@@ -3,7 +3,7 @@
 #include "framework/misc/camera.h"
 #include "framework/misc/debug.h"
 #include "framework/misc/light.h"
-#include "framework/base/glf_texture.h"
+#include "framework/base/texture.h"
 
 
 #include <glm/gtc/matrix_transform.hpp>

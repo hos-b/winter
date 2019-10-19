@@ -26,14 +26,15 @@ set(SRC_FILES src/tests/test_main.cpp
               src/framework/misc/light.cpp 
               src/framework/misc/camera.cpp 
               src/framework/misc/window.cpp 
-              src/framework/mesh/mesh.cpp
+			  src/framework/mesh/mesh.cpp
+			  src/framework/mesh/material.cpp
               src/framework/base/shader.cpp
               src/framework/base/renderer.cpp 
-              src/framework/base/glf_texture.cpp
+              src/framework/base/texture.cpp
               src/framework/base/vertex_array.cpp
               src/framework/base/index_buffer.cpp 
               src/framework/base/vertex_buffer.cpp 
-              # test
+              # tests
               src/tests/test.cpp
               src/tests/texture.cpp
               src/tests/pyramid.cpp
@@ -56,6 +57,7 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}
                       ${OPENGL_LIBRARIES}
                       ${GLEW_LIBRARIES}
-                      ${GLUT_LIBRARY}
+					  ${GLUT_LIBRARY}
+					  pthread
                       glfw
 )

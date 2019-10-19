@@ -4,9 +4,10 @@
 #include <glm/glm.hpp>
 
 #include "test.h"
+#include "framework/mesh/material.h"
 #include "framework/mesh/mesh.h"
+#include "framework/base/texture.h"
 #include "framework/base/shader.h"
-#include "framework/base/glf_texture.h"
 #include "framework/misc/camera.h"
 #include "framework/misc/light.h"
 
@@ -33,6 +34,7 @@ private:
     util::Camera *camera_;
     util::Light *directional_light_;
     mesh::Mesh *mesh_;
+	mesh::Material *material_;
 };
 
 } // namespace test

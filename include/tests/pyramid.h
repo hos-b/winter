@@ -6,7 +6,7 @@
 #include "test.h"
 #include "framework/mesh/mesh.h"
 #include "framework/base/shader.h"
-#include "framework/base/glf_texture.h"
+#include "framework/base/texture.h"
 #include "framework/misc/camera.h"
 
 namespace winter

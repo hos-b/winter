@@ -1,7 +1,7 @@
 #include "framework/base/vertex_buffer.h"
 #include "framework/base/index_buffer.h"
 #include "framework/base/vertex_array.h"
-#include "framework/base/glf_texture.h"
+#include "framework/base/texture.h"
 #include "framework/base/renderer.h"
 #include "framework/base/shader.h"
 #include "framework/misc/window.h"
