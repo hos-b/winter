@@ -17,7 +17,7 @@
 
 int main(void)
 {
-    winter::util::Window window(800, 600, "unit tests");
+    winter::util::Window window(1366, 768, "unit tests");
     
     //imgui
     const char* glsl_version = "#version 330";

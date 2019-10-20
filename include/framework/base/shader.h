@@ -2,8 +2,9 @@
 #define __WINTER_SHADER_H__
 
 #include <string>
-#include <unordered_map>
+#include <vector>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 
 namespace winter
@@ -21,6 +22,7 @@ class Shader
 {
 public:
     Shader(const std::string& filename);
+	Shader(const std::string& vtx_path, const std::string& frag_path);
     ~Shader();
 
     void Bind() const;
@@ -35,10 +37,16 @@ public:
     void SetUniform(const std::string& name, Ts... args);
     
 private:
-    unsigned int renderer_id_;
-    std::string file_path_;
     int GetUniformLocation(const std::string& name) const;
-    mutable std::unordered_map<std::string, int> uniform_cache_;
+	// single/separate shader files
+	enum type
+	{
+		JOINT = 1,
+		SEPERATE = 2
+	}type_;
+	std::vector<std::string> paths_;
+	unsigned int renderer_id_;
+	mutable std::unordered_map<std::string, int> uniform_cache_;
 };
 
 } // namespace base

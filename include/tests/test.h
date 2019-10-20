@@ -16,8 +16,8 @@ namespace test
 class Test
 {
 public:
-    Test() {};
-    virtual ~Test() {};
+    Test() {}
+    virtual ~Test() {}
 
     virtual void OnUpdate(float delta_time) {(void)delta_time;}
     virtual void OnRender() {}

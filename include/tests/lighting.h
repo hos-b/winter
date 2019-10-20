@@ -30,10 +30,11 @@ private:
     glm::vec3 rotation_;
 
     base::Shader* shader_;
-    base::Texture *texture_;
+    base::Texture *texture_, *dirt_;
     util::Camera *camera_;
-    util::Light *directional_light_;
-    mesh::Mesh *mesh_;
+    util::DirectionalLight *directional_light_;
+	util::PointLight **point_lights_;
+	mesh::Mesh *mesh_, *floor_;
 	mesh::Material *material_;
 };
 

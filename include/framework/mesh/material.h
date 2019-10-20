@@ -13,9 +13,10 @@ class Material
 public:
 	Material(std::string name, float specular_intensity, float shininess);
 	Material(const Material &mat) = delete;
-	~Material();
+	~Material() {}
 
 	void UpdateUnifrorms(base::Shader* shader);
+	void SetParameters(float specular_intensity, float shininess);
 
 private:
 	float specular_intensity_;	// defines how bright the color is

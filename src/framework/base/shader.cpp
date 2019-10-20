@@ -6,16 +6,26 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-
+#include <utility>
 namespace winter
 {
 namespace base
 {
     
-Shader::Shader(const std::string& file_path) : file_path_(file_path)
+Shader::Shader(const std::string& file_path)
 {
-    ShaderProgramSource source = ParseShader();
-    renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source);
+	type_ = Shader::JOINT;
+	paths_.emplace_back(file_path);
+	ShaderProgramSource source = ParseShader();
+	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source);
+}
+Shader::Shader(const std::string& vtx_path, const std::string& frag_path)
+{
+	type_ = Shader::SEPERATE;
+	paths_.emplace_back(vtx_path);
+	paths_.emplace_back(frag_path);
+	ShaderProgramSource source = ParseShader();
+	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source);
 }
 Shader::~Shader()
 {
@@ -71,26 +81,35 @@ unsigned int Shader::CreateShaders(const std::string& vertex_shader, const std::
 
 ShaderProgramSource Shader::ParseShader()
 {
-    std::ifstream stream(file_path_);
-    enum class ShaderType
-    {
-        NONE=-1, VERTEX=0, FRAGMENT=1
-    };
-    std::string line;
-    std::stringstream stringstream[2];
-    ShaderType type = ShaderType::NONE;
-    while(std::getline(stream, line))
-    {
-        if (line.find("#shader") != std::string::npos)
-        {
-            if (line.find("vertex") != std::string::npos)
-                type = ShaderType::VERTEX;
-            else if (line.find("fragment") != std::string::npos)
-                type = ShaderType::FRAGMENT;
-        }
-        else
-            stringstream[(int)type] << line << "\n";
-    }
+	std::stringstream stringstream[2];
+	if(type_==Shader::SEPERATE)
+	{
+		std::ifstream vtx(paths_[0]), frag(paths_[1]);
+		stringstream[0] << vtx.rdbuf();
+		stringstream[1] << frag.rdbuf();
+	}
+	else
+	{
+		std::ifstream stream(paths_[0]);
+    	enum class ShaderType
+    	{
+    	    NONE=-1, VERTEX=0, FRAGMENT=1
+    	};
+    	std::string line;
+    	ShaderType type = ShaderType::NONE;
+    	while(std::getline(stream, line))
+    	{
+    	    if (line.find("#shader") != std::string::npos)
+    	    {
+    	        if (line.find("vertex") != std::string::npos)
+    	            type = ShaderType::VERTEX;
+    	        else if (line.find("fragment") != std::string::npos)
+    	            type = ShaderType::FRAGMENT;
+    	    }
+    	    else
+    	        stringstream[(int)type] << line << "\n";
+    	}	
+	}
     return { stringstream[0].str(), stringstream[1].str() };
 }
 
@@ -108,6 +127,11 @@ int Shader::GetUniformLocation(const std::string& name) const
 // uniforms -------------------------------------------------------------------------
 template<>
 void Shader::SetUniform<int, 1>(const std::string &name, int arg)
+{
+    GLDebug(glUniform1i(GetUniformLocation(name), arg));
+}
+template<>
+void Shader::SetUniform<int, 1>(const std::string &name, unsigned int arg)
 {
     GLDebug(glUniform1i(GetUniformLocation(name), arg));
 }
