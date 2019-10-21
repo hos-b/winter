@@ -20,6 +20,18 @@ LightTest::~LightTest()
     glDisable(GL_DEPTH_TEST);
     window()->RemoveInputSubscriber("lit_pyramid");
     delete mesh_;
+	delete floor_;
+	delete texture_;
+	delete dirt_;
+	delete material_;
+	delete camera_;
+	delete shader_;
+	delete directional_light_;
+	delete point_lights_[0];
+	delete point_lights_[1];
+	delete spot_lights_[0];
+	delete[] point_lights_;
+	delete[] spot_lights_;
 }
 LightTest::LightTest()
 {
@@ -77,21 +89,26 @@ LightTest::LightTest()
 	// texture
     texture_ = new base::Texture("../res/textures/brick.png", GL_REPEAT);
 	texture_->Bind(0);
-	dirt_ = new base::Texture("../res/textures/plain.png", GL_REPEAT);
+	dirt_ = new base::Texture("../res/textures/dirt.png", GL_REPEAT);
 	dirt_->Bind(0);
 	shader_->SetUniform<int, 1>("u_texture", 0);
 
 	// lighting : directional
-    directional_light_ = new util::DirectionalLight("directional_light", glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f), 0.0f, 0.0f);
+    directional_light_ = new util::DirectionalLight("directional_light", glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f), 0.1f, 0.1f);
     directional_light_->UpdateUniforms(shader_);
-	//lighting : point lights
-	point_lights_ = new util::PointLight*[3];
-	point_lights_[0] = new util::PointLight("light0", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-4.0f, 0.0f, 0.0f), 0.0f, 0.4f);
-	point_lights_[0]->SetFadingParameters(0.3f, 0.2f, 0.1f);
+	// lighting : point lights
+	point_lights_ = new util::PointLight*[2];
+	point_lights_[0] = new util::PointLight("light0", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-4.0f, 0.0f, 0.0f), 0.0f, 0.1f);
+	point_lights_[0]->SetFadeParameters(0.3f, 0.2f, 0.1f);
 	point_lights_[0]->UpdateUniforms(shader_);
-	point_lights_[1] = new util::PointLight("light1", glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(4.0f, 0.0f, 0.0f), 0.0f, 1.0f);
-	point_lights_[1]->SetFadingParameters(0.3f, 0.2f, 0.1f);
+	point_lights_[1] = new util::PointLight("light1", glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(4.0f, 0.0f, 0.0f), 0.0f, 0.1f);
+	point_lights_[1]->SetFadeParameters(0.3f, 0.2f, 0.1f);
 	point_lights_[1]->UpdateUniforms(shader_);
+	// lighting : spot lights
+	spot_lights_ = new util::SpotLight*[2];
+	spot_lights_[0] = new util::SpotLight("light2", glm::vec3(0.0f, 1.0f, 1.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 20.0f, 1.0f, 1.0f);
+	spot_lights_[0]->SetFadeParameters(0.3f, 0.2f, 0.1f);
+	spot_lights_[0]->UpdateUniforms(shader_);
 	//point_lights_[2] = new util::PointLight("light2", glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 4.0f, 0.0f), 0.4f, 0.1f);
 	//point_lights_[2]->SetFadingParameters(0.6f, 0.5f, 0.16f);
 	//point_lights_[2]->UpdateUniforms(shader_);
@@ -125,6 +142,10 @@ void LightTest::OnRender()
     shader_->SetUniform<float*, 16>("u_projection", &projection_[0][0]);
 	shader_->SetUniform<glm::vec3, 3>("u_camera", camera_->position());
 
+	spot_lights_[0]->SetPosition(camera_->position()+glm::vec3(0.0f, -0.5f, 0.0f));
+	spot_lights_[0]->SetDirection(camera_->direction());
+	spot_lights_[0]->UpdateUniforms(shader_);
+	
 	texture_->Bind(0);
 	model_ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);

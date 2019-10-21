@@ -18,7 +18,7 @@ Mesh::Mesh(const std::string& name):  mesh_name_(name)
 }
 Mesh::~Mesh()
 {
-    DestroyMesh();
+	DestroyMesh();
 }
 
 void Mesh::CreateMesh(const void* vertex_data, unsigned int buffer_size, unsigned int *indices, unsigned int index_count)
@@ -56,7 +56,6 @@ void Mesh::DestroyMesh()
     delete vertex_array_;
     delete vertex_buffer_;
     delete index_buffer_;
-    delete shader_;
     vertex_array_ = nullptr;
     vertex_buffer_ = nullptr;
     index_buffer_ = nullptr;

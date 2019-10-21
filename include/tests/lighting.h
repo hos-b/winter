@@ -34,6 +34,7 @@ private:
     util::Camera *camera_;
     util::DirectionalLight *directional_light_;
 	util::PointLight **point_lights_;
+	util::SpotLight **spot_lights_;
 	mesh::Mesh *mesh_, *floor_;
 	mesh::Material *material_;
 };

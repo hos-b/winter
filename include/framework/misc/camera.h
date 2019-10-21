@@ -27,6 +27,7 @@ public:
 
     bool mouse_enabled() { return mouse_enabled_; }
 	glm::vec3 position() { return position_; }
+	glm::vec3 direction() { return direction_vector_; }
 
 private:
     void RefreshCoordinates();
