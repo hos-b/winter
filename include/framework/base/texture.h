@@ -11,20 +11,22 @@ namespace base
 class Texture
 {
 public:
-    Texture(const std::string& file_path, unsigned int gl_mode);
+    Texture(const std::string& file_path, unsigned int gl_mode, bool alpha=true);
     ~Texture();
 
     void Bind(unsigned int slot = 0) const;
     void Unbind() const;
 
-    inline int width() { return width_; }
-    inline int height() { return height_; } 
+    int width();
+	int height();
+	bool loaded();
 
 private:
     unsigned int renderer_id_;
     std::string file_path_;
-    unsigned char* local_buffer_;
-    int width_, height_, bits_per_pixel_;
+	bool loaded_;
+	unsigned char *local_buffer_;
+	int width_, height_, bits_per_pixel_;
 };
 
 } // namespace base

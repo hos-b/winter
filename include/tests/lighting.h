@@ -6,8 +6,10 @@
 #include "test.h"
 #include "framework/mesh/material.h"
 #include "framework/mesh/mesh.h"
+#include "framework/mesh/model.h"
 #include "framework/base/texture.h"
 #include "framework/base/shader.h"
+#include "framework/base/shadow_map.h"
 #include "framework/misc/camera.h"
 #include "framework/misc/light.h"
 
@@ -25,17 +27,21 @@ public:
     void OnImGuiRender();
     void SetWindowReference(util::Window* window) override;
 private:
-    glm::mat4 model_, view_, projection_;
+	void render_scene();
+	void render_shadowmap();
+
+	glm::mat4 model_, view_, projection_;
     glm::vec3 translation_;
     glm::vec3 rotation_;
 
-    base::Shader* shader_;
-    base::Texture *texture_, *dirt_;
-    util::Camera *camera_;
-    util::DirectionalLight *directional_light_;
+	base::Shader *shader_, *shadow_shader_;
+	base::Texture *texture_, *dirt_;
+	util::Camera *camera_;
+	util::DirectionalLight *directional_light_;
 	util::PointLight **point_lights_;
 	util::SpotLight **spot_lights_;
 	mesh::Mesh *mesh_, *floor_;
+	mesh::Model *shelby_;
 	mesh::Material *material_;
 };
 

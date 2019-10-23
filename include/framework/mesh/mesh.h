@@ -5,7 +5,6 @@
 #include "framework/base/vertex_buffer.h"
 #include "framework/base/vertex_array.h"
 #include "framework/base/index_buffer.h"
-#include "framework/base/shader.h"
 
 #include <string>
 #include <GL/glew.h>
@@ -30,7 +29,6 @@ public:
     Mesh(const std::string& name);
     ~Mesh() override;
 
-    void AssignShader(base::Shader* shader);
     void CreateMesh(const void* vertices, unsigned int vertex_count, unsigned int *indices, unsigned int index_count);
     void OnRender() override;
     void DestroyMesh();
@@ -47,7 +45,6 @@ private:
     base::VertexBuffer* vertex_buffer_;
     base::IndexBuffer* index_buffer_;
     base::VertexArray* vertex_array_;
-    base::Shader* shader_;
 };
 
 }// namespace mesh

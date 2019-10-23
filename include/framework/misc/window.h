@@ -25,11 +25,11 @@ public:
     ~Window();
 
     GLFWwindow* glfw_window() { return glfw_window_; }
-    unsigned int buffer_width() { return buffer_width_; }
-    unsigned int buffer_height() { return buffer_height_; }
-    bool is_ok() { return !glfwWindowShouldClose(glfw_window_); }
-    float aspect_ratio() { return (float)buffer_width_/(float)buffer_height_; }
-    void SwapBuffers() { glfwSwapBuffers(glfw_window_); }
+    unsigned int buffer_width() const { return buffer_width_; }
+    unsigned int buffer_height() const { return buffer_height_; }
+    bool is_ok() const { return !glfwWindowShouldClose(glfw_window_); }
+    float aspect_ratio() const { return (float)buffer_width_/(float)buffer_height_; }
+    void SwapBuffers() const { glfwSwapBuffers(glfw_window_); }
     void PollEvents();
     void RegsiterInputSubscriber(base::InputSubscriber* subscriber, const std::string& name);
     void RemoveInputSubscriber(const std::string& name);

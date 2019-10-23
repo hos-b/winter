@@ -44,7 +44,7 @@ TextureTest::TextureTest(){
     ib_ = new base::IndexBuffer(indices, 6);
 
     // shaders
-    shader_ = new base::Shader("../res/shaders/basic_shader.glsl");
+    shader_ = new base::Shader("../res/shaders/basic/basic_shader.glsl");
     shader_->Bind();
 
     // projection, view, model matrces

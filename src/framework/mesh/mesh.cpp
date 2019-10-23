@@ -11,10 +11,9 @@ namespace mesh
 Mesh::Mesh(const std::string& name):  mesh_name_(name)
 {
     initialized_ = false;
-    vertex_array_ = nullptr;
-    vertex_buffer_ = nullptr;
-    index_buffer_ = nullptr;
-    shader_ = nullptr;
+	vertex_array_ = nullptr;
+	vertex_buffer_ = nullptr;
+	index_buffer_ = nullptr;
 }
 Mesh::~Mesh()
 {
@@ -34,9 +33,8 @@ void Mesh::CreateMesh(const void* vertex_data, unsigned int buffer_size, unsigne
     vertex_buffer_->Unbind();
     index_buffer_->Unbind();
     vertex_array_->Unbind();
-    initialized_=true;
+	initialized_ = true;
 }
-
 
 void Mesh::OnRender()
 {
@@ -45,8 +43,6 @@ void Mesh::OnRender()
         std::cout << "attempting to draw uninitialized mesh " << mesh_name_ << std::endl;
         return;
     }
-    if(shader_)
-        shader_->Bind();
     vertex_array_->Bind();
     index_buffer_->Bind();
     GLDebug(glDrawElements(GL_TRIANGLES, index_buffer_->count(), GL_UNSIGNED_INT, nullptr));
@@ -59,13 +55,7 @@ void Mesh::DestroyMesh()
     vertex_array_ = nullptr;
     vertex_buffer_ = nullptr;
     index_buffer_ = nullptr;
-    shader_ = nullptr;
     initialized_ = false;
-}
-
-void Mesh::AssignShader(base::Shader* shader)
-{
-    shader_ = shader;
 }
 
 } // namespace mesh

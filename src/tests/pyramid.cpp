@@ -46,8 +46,7 @@ PyramidTest::PyramidTest()
     mesh_->CreateMesh(positions, 4 * 5 * sizeof(float), indices, 12);
 
     // shaders
-    shader_ = new base::Shader("../res/shaders/basic_shader.glsl");
-    mesh_->AssignShader(shader_);
+    shader_ = new base::Shader("../res/shaders/basic/basic_shader.glsl");
     shader_->Bind();
 
     // texture

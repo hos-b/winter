@@ -5,6 +5,9 @@ project(gltest)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O0 -Wall -Wextra -g")
 set(CMAKE_CXX_FLAGS "-O0 -Wall -Wextra -g")
 set(CMAKE_CXX_STANDARD 14)
+set(ASSIMP_LIBRARIES ${CMAKE_CURRENT_SOURCE_DIR}/outsource/assimp/lib/libassimp.so
+					 ${CMAKE_CURRENT_SOURCE_DIR}/outsource/assimp/lib/libIrrXML.a
+)
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
@@ -27,10 +30,12 @@ set(SRC_FILES src/tests/test_main.cpp
               src/framework/misc/camera.cpp 
               src/framework/misc/window.cpp 
 			  src/framework/mesh/mesh.cpp
+			  src/framework/mesh/model.cpp
 			  src/framework/mesh/material.cpp
-              src/framework/base/shader.cpp
+			  src/framework/base/shader.cpp
               src/framework/base/renderer.cpp 
               src/framework/base/texture.cpp
+			  src/framework/base/shadow_map.cpp
               src/framework/base/vertex_array.cpp
               src/framework/base/index_buffer.cpp 
               src/framework/base/vertex_buffer.cpp 
@@ -55,9 +60,11 @@ set(SRC_FILES src/tests/test_main.cpp
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}
-                      ${OPENGL_LIBRARIES}
+					  ${ASSIMP_LIBRARIES}
+					  ${OPENGL_LIBRARIES}
                       ${GLEW_LIBRARIES}
 					  ${GLUT_LIBRARY}
 					  pthread
-                      glfw
+					  glfw
+					  
 )

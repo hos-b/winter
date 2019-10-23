@@ -15,11 +15,12 @@
 #include "tests/pyramid.h"
 #include "tests/lighting.h"
 
+
 int main(void)
 {
-    winter::util::Window window(1366, 768, "unit tests");
-    
-    //imgui
+	winter::util::Window window(1366, 768, "unit tests");
+
+	//imgui
     const char* glsl_version = "#version 330";
     ImGui::CreateContext();
     ImGuiIO io = ImGui::GetIO(); (void)io;

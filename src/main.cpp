@@ -59,7 +59,7 @@ int main(void)
     char cwd[100];
     getcwd(cwd, 100);
     std::cout << "cwd: " << cwd << std::endl;
-    winter::base::Shader shader("../res/shaders/basic_shader.glsl");
+    winter::base::Shader shader("../res/shaders/basic/basic_shader.glsl");
     shader.Bind();
 
     // projection, view, model matrces

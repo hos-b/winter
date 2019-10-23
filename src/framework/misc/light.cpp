@@ -1,6 +1,7 @@
 #include "framework/misc/light.h"
 #include "framework/misc/debug.h"
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace winter
 {
@@ -28,6 +29,7 @@ void Light::SetDiffuseIntensity(float diffuse_intensity) { diffuse_intensity_ = 
 glm::vec3 Light::color() const { return color_; }
 float Light::ambient_intensity() const { return ambient_intensity_; }
 float Light::diffuse_intensity() const { return diffuse_intensity_; }
+base::ShadowMap* Light::shadow_map() const { return shadow_map_; }
 // Directional Light -------------------------------------------------------------------------------------
 DirectionalLight::~DirectionalLight() {}
 DirectionalLight::DirectionalLight() :  Light()
@@ -48,6 +50,15 @@ void DirectionalLight::UpdateUniforms(base::Shader *shader){
 	shader->SetUniform<float, 3>("u_" + name_ + ".direction", direction_.x, direction_.y, direction_.z);
 }
 glm::vec3 DirectionalLight::direction() const { return direction_; }
+void DirectionalLight::InitShadowMap(unsigned int width, unsigned int height, float cuboid_w, float cuboid_h, float cuboid_d){
+	shadow_map_ = new base::ShadowMap(width, height);
+	light_projection_ = glm::ortho(-cuboid_w, cuboid_w, -cuboid_h, cuboid_h, 0.1f, cuboid_d);
+}
+glm::mat4 DirectionalLight::light_transform() const 
+{ 
+	return light_projection_ * glm::lookAt(-direction_, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
+}
+
 // Point Light -------------------------------------------------------------------------------------
 unsigned int PointLight::count_ = 0;
 PointLight::~PointLight(){

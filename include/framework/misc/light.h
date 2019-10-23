@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "framework/base/shader.h"
+#include "framework/base/shadow_map.h"
 
 namespace winter
 {
@@ -19,6 +20,8 @@ public:
 	Light(const std::string &name, const glm::vec3 &color, float ambient_intensity, float diffuse_intensity);
 	virtual ~Light() {}
 	virtual void UpdateUniforms(base::Shader *shader) = 0;
+	// TODO: virtual void InitShadowMap(unsigned int width, unsigned int height) = 0;
+	// TODO: virtual glm::mat4 light_transform() const = 0 ;
 	// getter|setter
 	void SetColor(const glm::vec3& color);
 	void SetAmbientIntensity(float ambient_intensity);
@@ -26,14 +29,17 @@ public:
 	glm::vec3 color() const;
 	float ambient_intensity() const;
 	float diffuse_intensity() const;
+	base::ShadowMap *shadow_map() const;
 
 protected:
-	void UpdateSharedUniforms(base::Shader *shader);
-
 	glm::vec3 color_;
 	std::string name_;
 	float ambient_intensity_;
     float diffuse_intensity_;
+
+	// shadows
+	glm::mat4 light_projection_;
+	base::ShadowMap* shadow_map_;
 };
 
 class DirectionalLight : public Light
@@ -44,10 +50,13 @@ public:
 					 float ambient_intensity, float diffuse_intensity);
     DirectionalLight(const DirectionalLight &) = delete;
 	~DirectionalLight();
+
+	void InitShadowMap(unsigned int width, unsigned int height, float cuboid_w, float cuboid_h, float cuboid_d);
 	void UpdateUniforms(base::Shader *shader) override;
 	// getter|setter
 	void SetDirection(const glm::vec3 &direction);
 	glm::vec3 direction() const;
+	virtual glm::mat4 light_transform() const;
 
 private:
     glm::vec3 direction_;
