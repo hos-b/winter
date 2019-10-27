@@ -25,17 +25,19 @@ include_directories(include
 
 set(SRC_FILES src/tests/test_main.cpp
             # src/main.cpp 
+			  src/framework/light/light.cpp 
+			  src/framework/light/shadow_map.cpp
+			  src/framework/light/omni_shadow_map.cpp
               src/framework/misc/debug.cpp 
-              src/framework/misc/light.cpp 
               src/framework/misc/camera.cpp 
               src/framework/misc/window.cpp 
 			  src/framework/mesh/mesh.cpp
 			  src/framework/mesh/model.cpp
+			  src/framework/mesh/skybox.cpp
 			  src/framework/mesh/material.cpp
 			  src/framework/base/shader.cpp
-              src/framework/base/renderer.cpp 
               src/framework/base/texture.cpp
-			  src/framework/base/shadow_map.cpp
+              src/framework/base/renderer.cpp 
               src/framework/base/vertex_array.cpp
               src/framework/base/index_buffer.cpp 
               src/framework/base/vertex_buffer.cpp 

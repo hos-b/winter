@@ -2,7 +2,6 @@
 #include "framework/base/renderer.h"
 #include "framework/misc/camera.h"
 #include "framework/misc/debug.h"
-#include "framework/misc/light.h"
 #include "framework/base/texture.h"
 
 

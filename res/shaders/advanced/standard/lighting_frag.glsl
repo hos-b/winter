@@ -35,6 +35,21 @@ struct Material{
 	float specular_intensity;
 	float shininess;
 };
+// shadow struct
+struct OmniShadowMap{
+	samplerCube shadow_map;
+	float far_plane;
+};
+
+vec3 shadow_vectors[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
 
 uniform sampler2D u_texture; 	// basic texture
 uniform vec3 u_camera;			// eye position
@@ -49,6 +64,31 @@ uniform Material u_material;
 in vec4 v_dlight_space_pos;		// position w.r.t. directional light
 uniform sampler2D u_directional_shadow_map;	// directional shadow map texture
 uniform int u_pcf_radius;
+uniform OmniShadowMap u_omni_shadow_maps[3];
+
+float calc_omni_shadow_factor(PointLight light, int shadow_index)
+{
+	vec3 frag_to_light = v_frag_position - light.position;
+	float current_depth = length(frag_to_light);
+	float shadow = 0.0f;
+	float bias = 0.05;
+	int samples = 20;
+	float view_distance = length(u_camera - v_frag_position);
+	// TODO  add uniform
+	float disk_radius = (1.0f + (view_distance/u_omni_shadow_maps[shadow_index].far_plane)) / 20.0f;
+	for (int i = 0; i < samples; i++)
+	{
+		float closest_depth = texture(u_omni_shadow_maps[shadow_index].shadow_map, frag_to_light + shadow_vectors[i] * disk_radius).r;			
+		closest_depth *= u_omni_shadow_maps[shadow_index].far_plane;
+		if (current_depth - bias > closest_depth)
+		{
+			shadow += 1.0f;
+		}
+	}
+	shadow /= float(samples);
+	// TODO pcf
+	return shadow;
+}
 
 float calc_directional_shadow_factor(DirectionalLight light)
 {
@@ -59,7 +99,7 @@ float calc_directional_shadow_factor(DirectionalLight light)
 	// adding bias
 	vec3 normal_ = normalize(v_normal);
 	vec3 light_dir_ = normalize(light.direction);
-	float bias = max(0.05 * (1 - dot(normal_, light_dir_)), 0.005f);
+	float bias = max(0.05 * (1 - dot(normal_, light_dir_)), 0.0005f);
 	// pcf
 	float shadow = 0.0f;
 	vec2 texel_size = 1.0/textureSize(u_directional_shadow_map, 0);
@@ -99,12 +139,13 @@ vec4 calc_light_by_direction(Light light, vec3 direction, float shadow_factor)
 	}
     return (ambient_color + (1.0f - shadow_factor) * (diffuse_color + specular_color) );
 }
-vec4 calc_point_light(PointLight plight)
+vec4 calc_point_light(PointLight plight, int shadow_index)
 {
 	vec3 direction = v_frag_position - plight.position;
 	float distance = length(direction);
 	direction = normalize(direction);
-	vec4 col = calc_light_by_direction(plight.base, direction, 0.0f);
+	float shadow_factor = calc_omni_shadow_factor(plight, shadow_index);
+	vec4 col = calc_light_by_direction(plight.base, direction, shadow_factor);
 	float attenuation  = plight.exponent * distance * distance + plight.linear * distance + plight.constant;
 	return (col/attenuation);
 }
@@ -113,17 +154,17 @@ vec4 evaluate_point_lights()
 	vec4 sum_color = vec4(0,0,0,0);
 	for (int i = 0; i < u_plight_count; i++)
 	{
-		sum_color += calc_point_light(u_plight[i]);
+		sum_color += calc_point_light(u_plight[i], i);
 	}
 	return sum_color;
 }
-vec4 calc_spot_light(SpotLight slight)
+vec4 calc_spot_light(SpotLight slight, int shadow_index)
 {
 	vec3 ray_direction = normalize(v_frag_position - slight.base.position);
 	float factor = dot(ray_direction, slight.direction);
 	if (factor > slight.coeff)
 	{
-		vec4 col = calc_point_light(slight.base);
+		vec4 col = calc_point_light(slight.base, shadow_index);
 		return col * (1.0f - (1.0f - factor) * (1.0f/(1.0f-slight.coeff)));
 	}
 	return vec4(0 ,0 ,0 ,0);
@@ -133,7 +174,7 @@ vec4 evaluate_spot_lights()
 	vec4 sum_color = vec4(0,0,0,0);
 	for (int i = 0; i < u_slight_count; i++)
 	{
-		sum_color += calc_spot_light(u_slight[i]);
+		sum_color += calc_spot_light(u_slight[i], i + u_plight_count);
 	}
 	return sum_color;
 }

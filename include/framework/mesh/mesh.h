@@ -27,9 +27,10 @@ class Mesh : public base::Renderable
 {
 public:
     Mesh(const std::string& name);
-    ~Mesh() override;
+	Mesh(const Mesh &) = delete;
+	~Mesh() override;
 
-    void CreateMesh(const void* vertices, unsigned int vertex_count, unsigned int *indices, unsigned int index_count);
+	void CreateMesh(const void* vertices, unsigned int vertex_count, unsigned int *indices, unsigned int index_count);
     void OnRender() override;
     void DestroyMesh();
     inline bool initialized() { return initialized_; }

@@ -17,7 +17,7 @@ Shader::Shader(const std::string& file_path)
 	type_ = Shader::JOINT;
 	paths_.emplace_back(file_path);
 	ShaderProgramSource source = ParseShader();
-	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source);
+	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source, "");
 }
 Shader::Shader(const std::string& vtx_path, const std::string& frag_path)
 {
@@ -25,7 +25,16 @@ Shader::Shader(const std::string& vtx_path, const std::string& frag_path)
 	paths_.emplace_back(vtx_path);
 	paths_.emplace_back(frag_path);
 	ShaderProgramSource source = ParseShader();
-	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source);
+	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source, "");
+}
+Shader::Shader(const std::string& vtx_path, const std::string& frag_path, const std::string& geom_path)
+{
+	type_ = Shader::SEPERATE;
+	paths_.emplace_back(vtx_path);
+	paths_.emplace_back(frag_path);
+	paths_.emplace_back(geom_path);
+	ShaderProgramSource source = ParseShader();
+	renderer_id_ = CreateShaders(source.vertex_source, source.fragment_source, source.geometry_source);
 }
 Shader::~Shader()
 {
@@ -54,48 +63,64 @@ unsigned int Shader::CompileShader(const std::string& source, unsigned int type)
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
         char *message = (char*) alloca(length*sizeof(char)); // dynamic stack memory
         glGetShaderInfoLog(id, length, &length, message);
-        std::cout << "failed to compile " << (type==GL_VERTEX_SHADER ? "vertex shader":"fragment shader") << std::endl;
+        std::cout << "failed to compile " << (type==GL_VERTEX_SHADER ? "vertex shader": 
+											  type==GL_FRAGMENT_SHADER ? "fragment shader":
+											  "geometry_shader") << std::endl;
         std::cout << message;
         glDeleteShader(id);
-        return -1;
-    }
+		throw "shader";
+		return -1;
+	}
     return id;
 }
 
-unsigned int Shader::CreateShaders(const std::string& vertex_shader, const std::string& fragment_shader)
+unsigned int Shader::CreateShaders(const std::string& vertex_shader, const std::string& fragment_shader, const std::string& geometry_shader)
 {
     GLDebug(unsigned int program = glCreateProgram());
     // compiling shaders
     unsigned int vs = CompileShader(vertex_shader, GL_VERTEX_SHADER);
     unsigned int fs = CompileShader(fragment_shader, GL_FRAGMENT_SHADER);
-    // linking shaders
-    GLDebug(glAttachShader(program, vs));
+	unsigned int gs = 0;
+	if (geometry_shader.length() > 0)
+		gs = CompileShader(geometry_shader, GL_GEOMETRY_SHADER);
+	// linking shaders
+	GLDebug(glAttachShader(program, vs));
     GLDebug(glAttachShader(program, fs));
+	if (geometry_shader.length() > 0)
+		GLDebug(glAttachShader(program, gs));
     GLDebug(glLinkProgram(program));
     GLDebug(glValidateProgram(program));
-    // shaders are attached now, we can delete intermediates
-    GLDebug(glDeleteShader(vs));
+	// shaders are attached now, we can delete intermediates
+	GLDebug(glDeleteShader(vs));
     GLDebug(glDeleteShader(fs));
+	if (geometry_shader.length() > 0)
+		GLDebug(glDeleteShader(gs));
     return program;
 }
 
 ShaderProgramSource Shader::ParseShader()
 {
-	std::stringstream stringstream[2];
+	std::stringstream stringstream[3];
 	if(type_==Shader::SEPERATE)
 	{
 		std::ifstream vtx(paths_[0]), frag(paths_[1]);
 		stringstream[0] << vtx.rdbuf();
 		stringstream[1] << frag.rdbuf();
+		// if geometry shader present
+		if(paths_.size() == 3)
+		{
+			std::ifstream geom(paths_[2]);
+			stringstream[2] << geom.rdbuf();
+		}
 	}
 	else
 	{
 		std::ifstream stream(paths_[0]);
-    	enum class ShaderType
-    	{
-    	    NONE=-1, VERTEX=0, FRAGMENT=1
-    	};
-    	std::string line;
+		enum class ShaderType
+		{
+			NONE = -1, VERTEX = 0, FRAGMENT = 1, GEOMETRY = 2
+		};
+		std::string line;
     	ShaderType type = ShaderType::NONE;
     	while(std::getline(stream, line))
     	{
@@ -105,12 +130,14 @@ ShaderProgramSource Shader::ParseShader()
     	            type = ShaderType::VERTEX;
     	        else if (line.find("fragment") != std::string::npos)
     	            type = ShaderType::FRAGMENT;
+				else if (line.find("geometry") != std::string::npos)
+    	            type = ShaderType::GEOMETRY;
     	    }
     	    else
     	        stringstream[(int)type] << line << "\n";
     	}	
 	}
-    return { stringstream[0].str(), stringstream[1].str() };
+    return { stringstream[0].str(), stringstream[1].str(), stringstream[2].str() };
 }
 
 int Shader::GetUniformLocation(const std::string& name) const

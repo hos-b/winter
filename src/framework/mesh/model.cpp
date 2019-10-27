@@ -33,7 +33,7 @@ void Model::SetLocalTextureDirectory(const std::string &local_tex_dir){
 /* loads the model, including all the meshes and textures (1 texture pre mesh only) */
 void Model::LoadModel(const std::string& path){
 	Assimp::Importer importer;
-	std::cout << "loading file" << std::endl;
+	std::cout << "loading file -> " << std::flush;
 	const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | 
 												   aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 	if (!scene){
@@ -41,14 +41,14 @@ void Model::LoadModel(const std::string& path){
 				  << importer.GetErrorString() << std::endl;
 		return;
 	}
-	std::cout << "loading root node" << std::endl;
+	std::cout << "loading root node -> " << std::flush;
 	LoadNode(scene->mRootNode, scene);
-	std::cout << "loading textures" << std::endl;
+	std::cout << "loading textures..." << std::endl;
 	LoadMaterials(scene);
-	std::cout << "loaded " << mesh_list_.size() << " meshes" << std::endl;
+	// std::cout << "loaded " << mesh_list_.size() << " meshes" << std::endl;
 	std::cout << "model dimensions :\n"
-			  << "x: [" << min_x_ << "," << max_x_ << "]\n"
-			  << "y: [" << min_y_ << "," << max_y_ << "]\n"
+			  << "x: [" << min_x_ << "," << max_x_ << "], "
+			  << "y: [" << min_y_ << "," << max_y_ << "], "
 			  << "z: [" << min_z_ << "," << max_z_ << "]\n";
 }
 /* renders all the meshes in the model */
@@ -131,7 +131,7 @@ void Model::LoadMaterials(const aiScene *scene){
 			count++;
 		}
 	}
-	std::cout << "used default for " << count << "/" << texture_list_.size() << " textures" << std::endl;
+	// std::cout << "used default for " << count << "/" << texture_list_.size() << " textures" << std::endl;
 }
 
 /* function to keep track of the model dimensions */

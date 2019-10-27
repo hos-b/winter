@@ -4,7 +4,7 @@
 #include "framework/misc/helper.h"
 #include "framework/misc/camera.h"
 #include "framework/misc/debug.h"
-#include "framework/misc/light.h"
+#include "framework/light/light.h"
 #include "framework/mesh/model.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -85,8 +85,12 @@ LightTest::LightTest()
 	shelby_->LoadModel("../res/models/merc/sls_amg.obj");
 
 	// shaders
-	shadow_shader_ = new base::Shader("../res/shaders/advanced/shadow/directional.glsl");
-    shader_ = new base::Shader("../res/shaders/advanced/standard/lighting_vertex.glsl", "../res/shaders/advanced/standard/lighting_frag.glsl");
+	shadow_shader_ = new base::Shader("../res/shaders/advanced/shadow/directional_vertex.glsl");
+    shader_ = new base::Shader("../res/shaders/advanced/standard/lighting_vertex.glsl", 
+							   "../res/shaders/advanced/standard/lighting_frag.glsl");
+	omni_shadow_shader_ = new base::Shader("../res/shaders/advanced/shadow/omni_vertex.glsl",
+										   "../res/shaders/advanced/shadow/omni_frag.glsl",
+										   "../res/shaders/advanced/shadow/omni_geometry.glsl");
 	shader_->Bind();
 
 	// texture
@@ -97,27 +101,26 @@ LightTest::LightTest()
 	shader_->SetUniform<int, 1>("u_texture", 0);
 
 	// lighting : directional
-    directional_light_ = new util::DirectionalLight("directional_light", glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, -60.0f, -20.0f), 0.1f, 0.4f);
+    directional_light_ = new light::DirectionalLight("directional_light", glm::vec3(1.0f, 0.53f, 0.3f), glm::vec3(-10.0f, -12.0f, 18.5f), 0.1f, 0.4f);
     directional_light_->UpdateUniforms(shader_);
-	// shadows
 	directional_light_->InitShadowMap(2048, 2048, 20.0f, 20.0f, 200.0f);
 	shader_->SetUniform<int, 1>("u_pcf_radius", 2);
 	// lighting : point lights
-	point_lights_ = new util::PointLight*[2];
-	point_lights_[0] = new util::PointLight("light0", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-4.0f, 0.0f, 0.0f), 0.0f, 0.1f);
-	point_lights_[0]->SetFadeParameters(0.3f, 0.2f, 0.1f);
+	point_lights_ = new light::PointLight*[2];
+	point_lights_[0] = new light::PointLight("light0", glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 4.0f), 0.0f, 0.3f);
+	point_lights_[0]->SetFadeParameters(0.3f, 0.01f, 0.01f);
 	point_lights_[0]->UpdateUniforms(shader_);
-	point_lights_[1] = new util::PointLight("light1", glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(4.0f, 0.0f, 0.0f), 0.0f, 0.1f);
-	point_lights_[1]->SetFadeParameters(0.3f, 0.2f, 0.1f);
+	point_lights_[0]->InitShadowMap(1024, 1024, 0.01f, 100.0f);
+	point_lights_[1] = new light::PointLight("light1", glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, -4.0f), 0.0f, 0.3f);
+	point_lights_[1]->SetFadeParameters(0.3f, 0.01f, 0.01f);
 	point_lights_[1]->UpdateUniforms(shader_);
+	point_lights_[1]->InitShadowMap(1024, 1024, 0.01f, 100.0f);
 	// lighting : spot lights
-	spot_lights_ = new util::SpotLight*[2];
-	spot_lights_[0] = new util::SpotLight("light2", glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), 120.0f, 0.2f, 0.3f);
-	spot_lights_[0]->SetFadeParameters(0.3f, 0.2f, 0.1f);
+	spot_lights_ = new light::SpotLight*[2];
+	spot_lights_[0] = new light::SpotLight("light2", glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(4.0f, 4.0f, 0.0f), glm::vec3(0.0f, 10.0f, 0.0f), 40.0f, 0.2f, 0.2f);
+	spot_lights_[0]->SetFadeParameters(1.0f, 0.0f, 0.0f);
 	spot_lights_[0]->UpdateUniforms(shader_);
-	//point_lights_[2] = new util::PointLight("light2", glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 4.0f, 0.0f), 0.4f, 0.1f);
-	//point_lights_[2]->SetFadingParameters(0.6f, 0.5f, 0.16f);
-	//point_lights_[2]->UpdateUniforms(shader_);
+	spot_lights_[0]->InitShadowMap(1024, 1024, 0.01f, 100.0f);
 
 	// material
 	material_ = new mesh::Material("material", 4.0f, 256.0f);
@@ -128,11 +131,21 @@ LightTest::LightTest()
     camera_->SetSensitivity(5.0f, 20.0f);
 
     // projection, view, model matrices
-    projection_ = glm::perspective(45.0f, 1366.0f/768.0f, 0.1f, 500.0f);
+    projection_ = glm::perspective(glm::radians(60.0f), 1366.0f/768.0f, 0.1f, 500.0f);
     shader_->SetUniform<float*, 16>("u_projection", &projection_[0][0]);
 
-    // enable depth buffer
-    glEnable(GL_DEPTH_TEST);
+	// skybox
+	std::vector<std::string> sky_path;
+	sky_path.emplace_back("../res/textures/box/cupertin-lake_rt.tga");
+	sky_path.emplace_back("../res/textures/box/cupertin-lake_lf.tga");
+	sky_path.emplace_back("../res/textures/box/cupertin-lake_up.tga");
+	sky_path.emplace_back("../res/textures/box/cupertin-lake_dn.tga");
+	sky_path.emplace_back("../res/textures/box/cupertin-lake_bk.tga");
+	sky_path.emplace_back("../res/textures/box/cupertin-lake_ft.tga");
+	skybox_ = new mesh::Skybox(sky_path);
+
+	// enable depth bufferratio
+	glEnable(GL_DEPTH_TEST);
 }
 void LightTest::SetWindowReference(util::Window* window)
 {
@@ -144,10 +157,10 @@ void LightTest::render_scene()
 {
 	// restoring viewport size
 	glViewport(0, 0, window()->buffer_width(), window()->buffer_height());
-
 	base::Renderer::Clear(base::Renderer::RenderMode::GL3D);
-	
-    shader_->Bind();
+	skybox_->RenderSkybox(camera_->view_matrix(), projection_);
+
+	shader_->Bind();
     // basic uniforms
 	shader_->SetUniform<float*, 16>("u_view", &camera_->view_matrix()[0][0]);
     shader_->SetUniform<float*, 16>("u_projection", &projection_[0][0]);
@@ -157,11 +170,22 @@ void LightTest::render_scene()
 	directional_light_->shadow_map()->BindMap(2);
 	shader_->SetUniform<int, 1>("u_directional_shadow_map", 2);
 
-	// spot light on the camera
-	spot_lights_[0]->SetPosition(camera_->position()+glm::vec3(0.0f, -0.5f, 0.0f));
-	spot_lights_[0]->SetDirection(camera_->direction());
-	spot_lights_[0]->UpdateUniforms(shader_);
+	point_lights_[0]->shadow_map()->BindMap(3);
+	shader_->SetUniform<int, 1>("u_omni_shadow_maps[" + std::to_string(0) + "].shadow_map", 3);
+	shader_->SetUniform<float, 1>("u_omni_shadow_maps[" + std::to_string(0) + "].far_plane", point_lights_[0]->far_plane());
+	point_lights_[1]->shadow_map()->BindMap(4);
+	shader_->SetUniform<int, 1>("u_omni_shadow_maps[" + std::to_string(1) + "].shadow_map", 4);
+	shader_->SetUniform<float, 1>("u_omni_shadow_maps[" + std::to_string(1) + "].far_plane", point_lights_[1]->far_plane());
+
+	spot_lights_[0]->shadow_map()->BindMap(5);
+	shader_->SetUniform<int, 1>("u_omni_shadow_maps[" + std::to_string(2) + "].shadow_map", 5);
+	shader_->SetUniform<float, 1>("u_omni_shadow_maps[" + std::to_string(2) + "].far_plane", spot_lights_[0]->far_plane());
 	
+	// spot light on the camera
+	// spot_lights_[0]->SetPosition(camera_->position() + glm::vec3(0.0f, -0.9f, 0.0f));
+	// spot_lights_[0]->SetDirection(camera_->direction());
+	// spot_lights_[0]->UpdateUniforms(shader_);
+
 	// model uses texture slot 1
 	shader_->SetUniform<int, 1>("u_texture", 1);
 	model_ = glm::mat4(1.0f);
@@ -170,23 +194,23 @@ void LightTest::render_scene()
 	model_ = glm::rotate(model_, rotation_.y,glm::vec3(0.0f, 1.0f, 0.0f));
 	model_ = glm::rotate(model_, rotation_.z,glm::vec3(0.0f, 0.0f, 1.0f));
 	shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
+	material_->UpdateUnifrorms(shader_);
 	shelby_->OnRender();
 
-	shader_->SetUniform<int, 1>("u_texture", 0);
-	dirt_->Bind(0);
+	shader_->SetUniform<int, 1>("u_texture", 1);
+	dirt_->Bind(1);
 	model_ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
 	shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
 	floor_->OnRender();
 }
-
-void LightTest::render_shadowmap()
+void LightTest::render_directional_shadowmap()
 {
 	shadow_shader_->Bind();
 	// set viewport to be the same size as our frame buffer
 	glViewport(0, 0, directional_light_->shadow_map()->shadow_width(), directional_light_->shadow_map()->shadow_height());
 	directional_light_->shadow_map()->BindFramebuffer();
 	glClear(GL_DEPTH_BUFFER_BIT);
-	shadow_shader_->SetUniform<float *, 16>("u_dlight_transform", &directional_light_->light_transform()[0][0]);
+	directional_light_->UpdateShadowUniforms(shadow_shader_);
 	// rendering the scene with new shader
 	// with no textures or any other uniforms
 	model_ = glm::mat4(1.0f);
@@ -202,9 +226,63 @@ void LightTest::render_shadowmap()
 	floor_->OnRender();
 	directional_light_->shadow_map()->UnbindFramebuffer();
 }
+void LightTest::render_point_shadowmap(light::PointLight *plight)
+{
+	omni_shadow_shader_->Bind();
+	// set viewport to be the same size as our frame buffer
+	glViewport(0, 0, plight->shadow_map()->shadow_width(), plight->shadow_map()->shadow_height());
+	plight->shadow_map()->BindFramebuffer();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	plight->UpdateShadowUniforms(omni_shadow_shader_);
+	// rendering the scene with new shader
+	// with no textures or any other uniforms
+	model_ = glm::mat4(1.0f);
+	model_ = glm::translate(model_, translation_);
+	model_ = glm::rotate(model_, rotation_.x,glm::vec3(1.0f, 0.0f, 0.0f));
+	model_ = glm::rotate(model_, rotation_.y,glm::vec3(0.0f, 1.0f, 0.0f));
+	model_ = glm::rotate(model_, rotation_.z,glm::vec3(0.0f, 0.0f, 1.0f));
+	omni_shadow_shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
+	shelby_->OnRender();
+
+	model_ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
+	omni_shadow_shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
+	floor_->OnRender();
+	plight->shadow_map()->UnbindFramebuffer();
+}
+void LightTest::render_spot_shadowmap(light::SpotLight *slight)
+{
+	omni_shadow_shader_->Bind();
+	// set viewport to be the same size as our frame buffer
+	glViewport(0, 0, slight->shadow_map()->shadow_width(), slight->shadow_map()->shadow_height());
+	slight->shadow_map()->BindFramebuffer();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	// IMPORTANT if you dont set the position below the camera
+	// it seems like there is no shadow from point light
+	// slight->SetPosition(camera_->position() + glm::vec3(0.0f, -0.9f, 0.0f));
+	// slight->SetDirection(camera_->direction());
+	// slight->UpdateLightTransforms();
+	slight->UpdateShadowUniforms(omni_shadow_shader_);
+	// rendering the scene with new shader
+	// with no textures or any other uniforms
+	model_ = glm::mat4(1.0f);
+	model_ = glm::translate(model_, translation_);
+	model_ = glm::rotate(model_, rotation_.x,glm::vec3(1.0f, 0.0f, 0.0f));
+	model_ = glm::rotate(model_, rotation_.y,glm::vec3(0.0f, 1.0f, 0.0f));
+	model_ = glm::rotate(model_, rotation_.z,glm::vec3(0.0f, 0.0f, 1.0f));
+	omni_shadow_shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
+	shelby_->OnRender();
+
+	model_ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f));
+	omni_shadow_shader_->SetUniform<float*, 16>("u_model", &model_[0][0]);
+	floor_->OnRender();
+	slight->shadow_map()->UnbindFramebuffer();
+}
 void LightTest::OnRender()
 {
-	render_shadowmap();
+	render_directional_shadowmap();
+	render_spot_shadowmap(spot_lights_[0]);
+	render_point_shadowmap(point_lights_[0]);
+	render_point_shadowmap(point_lights_[1]);
 	render_scene();
 }
 void LightTest::OnImGuiRender()
